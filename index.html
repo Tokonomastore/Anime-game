@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>tokonoma · خمّن الأنمي</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F2EADB; --card:#F8F2E6; --ink:#2b2b2b; --gray:#6b6b6b;
+    --red:#C8281E; --green:#2f7d4f; --line:#d9cdb6;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Tajawal',system-ui,sans-serif;
+       min-height:100vh;display:flex;justify-content:center;padding:20px 16px 40px}
+  main{width:100%;max-width:460px}
+  header{text-align:center;margin-bottom:18px}
+  .brand{font-family:ui-monospace,Menlo,monospace;letter-spacing:.2em;font-size:.8rem;color:var(--gray);direction:ltr}
+  h1{font-family:'Amiri',serif;font-size:2.2rem;margin:.2em 0 .1em}
+  .no{font-family:ui-monospace,Menlo,monospace;color:var(--red);font-size:.95rem;direction:ltr;display:inline-block}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px}
+  .emoji{font-size:2.6rem;text-align:center;letter-spacing:.15em;line-height:1.4;margin-bottom:10px}
+  .hints{list-style:none;padding:0;margin:0 0 14px;color:var(--gray);font-size:.95rem}
+  .hints li{padding:6px 0;border-top:1px dashed var(--line)}
+  .hints b{color:var(--ink)}
+  .mono{font-family:ui-monospace,Menlo,monospace;color:var(--red);direction:ltr;display:inline-block}
+  .dots{display:flex;gap:8px;justify-content:center;margin:6px 0 14px;direction:ltr}
+  .dot{width:34px;height:10px;border-radius:3px;border:1.5px solid var(--line)}
+  .dot.bad{background:var(--red);border-color:var(--red)}
+  .dot.good{background:var(--green);border-color:var(--green)}
+  input{width:100%;padding:13px 14px;font:inherit;font-size:1rem;border:1.5px solid var(--line);
+        border-radius:10px;background:#fff;color:var(--ink)}
+  input:focus{outline:none;border-color:var(--red)}
+  .opts{margin-top:6px;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff}
+  .opts button{display:block;width:100%;text-align:right;padding:11px 14px;border:0;border-bottom:1px solid #eee;
+               background:#fff;font:inherit;cursor:pointer;color:var(--ink)}
+  .opts button:last-child{border-bottom:0}
+  .opts button:hover{background:#faf3e6}
+  .opts small{color:var(--gray);direction:ltr;display:inline-block;margin-inline-start:6px}
+  .msg{min-height:1.4em;margin-top:10px;text-align:center;color:var(--red);font-size:.95rem}
+  .result{text-align:center}
+  .result h2{font-family:'Amiri',serif;font-size:1.6rem;margin:.2em 0}
+  .answer{font-size:1.1rem;margin:4px 0 12px}
+  .code{display:inline-block;margin:6px 0 4px;padding:8px 16px;border:1.5px dashed var(--red);border-radius:8px;
+        font-family:ui-monospace,Menlo,monospace;font-size:1.2rem;color:var(--red);letter-spacing:.12em;direction:ltr}
+  .btn{display:inline-block;margin:6px 4px 0;padding:11px 18px;border-radius:10px;border:1.5px solid var(--ink);
+       background:var(--ink);color:var(--bg);font:inherit;font-weight:700;cursor:pointer;text-decoration:none}
+  .btn.alt{background:transparent;color:var(--ink)}
+  .stats{display:flex;justify-content:center;gap:22px;margin:14px 0 4px;color:var(--gray);font-size:.85rem}
+  .stats span b{display:block;font-family:ui-monospace,Menlo,monospace;font-size:1.3rem;color:var(--red);direction:ltr}
+  .next{color:var(--gray);font-size:.9rem;margin-top:10px}
+  footer{text-align:center;margin-top:18px;font-size:.85rem;color:var(--gray)}
+  footer a{color:var(--red);text-decoration:none;font-weight:700}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="brand">TOKONOMA</div>
+    <h1>خمّن الأنمي</h1>
+    <div class="no" id="no"></div>
+  </header>
+  <div class="card" id="game"></div>
+  <footer>لعبة من <a href="https://tokonomastore.com" target="_blank" rel="noopener">tokonomastore.com</a></footer>
+</main>
+
+<script>
+/* ====== إعدادات سهلة التعديل ====== */
+const REWARD_CODE = "TOKO10";            // كود الخصم الذي سيظهر للفائز (أنشئه في Shopify)
+const REWARD_TEXT = "خصم 10% على أي طلب من المتجر";
+const SITE = "tokonomastore.com";
+const START = Date.UTC(2026, 10, 10);    // تاريخ انطلاق اللعبة (الشهر يبدأ من 0)
+const MAX = 4;                           // عدد المحاولات
+
+/* ====== قائمة الأنميات: [أسماء...] ، إيموجي ، تلميح ====== */
+const ANIME = [
+ {n:["ون بيس","One Piece","وان بيس"], e:"🏴‍☠️🍖👒🌊", h:"قراصنة يبحثون عن الكنز الأعظم، وقائدهم جسمه من المطاط"},
+ {n:["ناروتو","Naruto"], e:"🍥🦊🥷🍜", h:"فتى نينجا يحلم أن يصبح زعيم قريته وبداخله وحش"},
+ {n:["دراغون بول","Dragon Ball","دراجون بول"], e:"🐉🔮💥👊", h:"محارب يجمع كرات سحرية لاستدعاء تنين"},
+ {n:["هجوم العمالقة","Attack on Titan","أتاك أون تايتن"], e:"🧱👹🗡️🦅", h:"البشر يعيشون خلف أسوار هرباً من عمالقة ضخمة"},
+ {n:["قاتل الشياطين","Demon Slayer","ديمون سلاير"], e:"👹🗡️🌊🎍", h:"فتى يحمل شقيقته المتحولة في صندوق ليعالجها"},
+ {n:["أكاديميتي للأبطال","My Hero Academia","بوكو نو هيرو"], e:"🦸💪⚡🏫", h:"فتى بلا قدرات يرث قوة أعظم بطل في مدرسة للأبطال"},
+ {n:["مذكرة الموت","Death Note","ديث نوت"], e:"📓✍️🍎💀", h:"دفتر يقتل كل من يُكتب اسمه فيه"},
+ {n:["بليتش","Bleach"], e:"🗡️💀👻🍊", h:"مراهق يرى الأرواح ويصبح حاصد أرواح"},
+ {n:["هانتر × هانتر","Hunter x Hunter","هانتر هانتر"], e:"🎣🃏🌍⚔️", h:"فتى يغادر قريته ليصبح صياداً ويبحث عن والده"},
+ {n:["فولميتال ألكيميست","Fullmetal Alchemist","فل ميتال"], e:"⚗️🤖⚙️🔥", h:"أخوان يستخدمان الكيمياء السحرية لاستعادة ما فقداه"},
+ {n:["جوجتسو كايسن","Jujutsu Kaisen","جوجوتسو"], e:"👹🤞🧿🏫", h:"طالب يبتلع إصبع لعنة قوية ويلتحق بمدرسة السحر"},
+ {n:["طوكيو غول","Tokyo Ghoul"], e:"👁️🎭☕🩸", h:"شاب يتحول إلى نصف غول بعد حادث ويعيش بين عالمين"},
+ {n:["ون بنش مان","One Punch Man","وان بنش مان"], e:"👊🦸😐🥚", h:"بطل أصلع يقضي على أي عدو بضربة واحدة وقد مل من ذلك"},
+ {n:["سباي × فاميلي","Spy x Family","سباي فاميلي"], e:"🕵️👧🥜🐶", h:"جاسوس وقاتلة وطفلة تقرأ الأفكار يتظاهرون بأنهم عائلة"},
+ {n:["تشينسو مان","Chainsaw Man"], e:"🪚😈🩸🐕", h:"شاب مديون يندمج مع كلبه الشيطان ويتحول لمنشار"},
+ {n:["سورد آرت أونلاين","Sword Art Online","ساو"], e:"🎮⚔️🕹️👥", h:"لاعبون محبوسون داخل لعبة واقع افتراضي، والموت فيها حقيقي"},
+ {n:["هايكيو","Haikyuu","هايكيو!!"], e:"🏐🔥🍊🦉", h:"فتى قصير القامة يحلم بالقفز عالياً في كرة الطائرة"},
+ {n:["بوكيمون","Pokemon","بوكيمون"], e:"⚡🐭🔴⚪", h:"مدرب صغير ومعه فأر كهربائي أصفر يتجولان في العالم"},
+ {n:["المحقق كونان","Detective Conan","كونان"], e:"🔍🕶️🧒💥", h:"محقق مراهق عبقري يتحول إلى جسد طفل ويحل الجرائم"},
+ {n:["فيري تيل","Fairy Tail"], e:"🧚🔥🐱🍖", h:"نقابة سحرة، وأحدهم يأكل النار ومعه قط أزرق طائر"},
+ {n:["بلاك كلوفر","Black Clover"], e:"🍀📖⚔️🔥", h:"فتى بلا سحر في عالم الجميع فيه ساحر، يحمل كتاب بخمس أوراق"},
+ {n:["دكتور ستون","Dr. Stone","دكتور ستون"], e:"🪨🧪🔬🌱", h:"البشرية تتحجر، وعبقري علوم يعيد بناء الحضارة من الصفر"},
+ {n:["كود غياس","Code Geass"], e:"♟️👑🎭🤖", h:"أمير منفي يحصل على قوة الأمر ويقود ثورة بقناع"},
+ {n:["شتاينز غيت","Steins;Gate","ستاينز غيت"], e:"⏳📞🧪🔬", h:"مجموعة تكتشف أن رسائل الهاتف تبعث إلى الماضي"},
+ {n:["كاوبوي بيبوب","Cowboy Bebop"], e:"🚀🤠🎷🐕", h:"صيادو جوائز في الفضاء على أنغام الجاز"},
+ {n:["نيون جينيسس إيفانجيليون","Neon Genesis Evangelion","إيفانجيليون"], e:"🤖😭🧬🧒", h:"مراهق متردد يقود روبوتاً عملاقاً لمحاربة الملائكة"},
+ {n:["اسمك","Your Name","كيمي نو نا وا"], e:"☄️🌅🔄🏔️", h:"فتى وفتاة يتبادلان الجسدين في أحلامهم ويربطهم مذنب"},
+ {n:["سولو ليفلينج","Solo Leveling","سولو ليفيلينج"], e:"🗡️👤🕳️📈", h:"أضعف صياد في العالم يحصل على نظام يجعله يزداد قوة"},
+ {n:["فرييرن","Frieren","فريرين"], e:"🧝‍♀️✨🪄🌌", h:"ساحرة عمرها آلاف السنين تسافر بعد موت رفاقها لتفهم البشر"},
+ {n:["فينلاند ساغا","Vinland Saga"], e:"⚔️🌊🛡️🚢", h:"قصة انتقام وسلام بين الفايكنغ والأراضي الجديدة"},
+];
+
+/* ====== أدوات ====== */
+const $ = s => document.querySelector(s);
+const norm = s => s.toLowerCase().replace(/[\s\-_.;:!?×x،]/g,"").replace(/[أإآ]/g,"ا").replace(/ة/g,"ه").replace(/ى/g,"ي");
+const store = {
+  get(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } },
+  set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
+};
+function localDayNo(){
+  const d = new Date();
+  const t = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
+  return Math.max(0, Math.round((t - START)/864e5));
+}
+const pad = n => String(n).padStart(3,"0");
+
+/* ====== الحالة ====== */
+const dayNo = localDayNo();
+const dailyIdx = dayNo % ANIME.length;
+let mode = "daily";
+let cur = null;       // {idx, guesses:[...indices], done, won}
+let stats = store.get("toko_stats") || {played:0, wins:0, streak:0, lastWin:-9};
+
+function loadDaily(){
+  const s = store.get("toko_daily");
+  if(s && s.day === dayNo) return {idx:dailyIdx, guesses:s.guesses, done:s.done, won:s.won};
+  return {idx:dailyIdx, guesses:[], done:false, won:false};
+}
+function saveDaily(){
+  if(mode!=="daily") return;
+  store.set("toko_daily", {day:dayNo, guesses:cur.guesses, done:cur.done, won:cur.won});
+}
+cur = loadDaily();
+
+/* ====== الرسم ====== */
+function label(a){ return a.n[0] + ' <small>' + a.n[1] + '</small>'; }
+
+function render(msg){
+  const a = ANIME[cur.idx];
+  const wrong = cur.guesses.filter(g => g !== cur.idx).length;
+  const eng = a.n[1].replace(/[^A-Za-z]/g,"");
+  $("#no").textContent = mode==="daily" ? "Nº " + pad(dayNo+1) : "FREE PLAY";
+
+  let html = '<div class="emoji">' + a.e + '</div><ul class="hints">';
+  html += '<li>🧩 <b>تلميح 1:</b> الإيموجي أعلاه</li>';
+  if(wrong>=1 || cur.done) html += '<li>💡 <b>تلميح 2:</b> ' + a.h + '</li>';
+  if(wrong>=2 || cur.done) html += '<li>🔤 <b>تلميح 3:</b> الاسم الإنجليزي يبدأ بحرف <span class="mono">' + eng[0].toUpperCase() + '</span></li>';
+  if(wrong>=3 || cur.done) html += '<li>🔢 <b>تلميح 4:</b> عدد حروفه <span class="mono">' + eng.length + '</span></li>';
+  html += '</ul><div class="dots">';
+  for(let i=0;i<MAX;i++){
+    const g = cur.guesses[i];
+    html += '<div class="dot ' + (g===undefined ? '' : (g===cur.idx ? 'good' : 'bad')) + '"></div>';
+  }
+  html += '</div>';
+
+  if(!cur.done){
+    html += '<input id="q" type="text" placeholder="اكتب اسم الأنمي واختره من القائمة..." autocomplete="off">';
+    html += '<div id="opts"></div>';
+    html += '<div class="msg" id="msg">' + (msg||"") + '</div>';
+  } else {
+    html += resultHTML(a);
+  }
+  $("#game").innerHTML = html;
+
+  if(!cur.done){
+    const q = $("#q");
+    q.addEventListener("input", showOpts);
+    q.addEventListener("keydown", e => {
+      if(e.key==="Enter"){ const f = matches(q.value)[0]; if(f!==undefined) guess(f); }
+    });
+  } else {
+    wireResult();
+  }
+}
+
+function matches(text){
+  const t = norm(text);
+  if(!t) return [];
+  const out = [];
+  ANIME.forEach((a,i) => { if(!cur.guesses.includes(i) && a.n.some(x => norm(x).includes(t))) out.push(i); });
+  return out.slice(0,6);
+}
+function showOpts(){
+  const list = matches($("#q").value);
+  $("#opts").innerHTML = list.length
+    ? '<div class="opts">' + list.map(i => '<button data-i="' + i + '">' + label(ANIME[i]) + '</button>').join("") + '</div>'
+    : "";
+  document.querySelectorAll("#opts button").forEach(b => b.addEventListener("click", () => guess(+b.dataset.i)));
+}
+
+function guess(i){
+  cur.guesses.push(i);
+  const wrong = cur.guesses.filter(g => g !== cur.idx).length;
+  if(i === cur.idx){ cur.done = true; cur.won = true; }
+  else if(wrong >= MAX){ cur.done = true; cur.won = false; }
+  if(cur.done && mode==="daily") updateStats();
+  saveDaily();
+  render(cur.done ? "" : "ليس هو، جرّب مرة أخرى 🔁");
+}
+
+function updateStats(){
+  stats.played++;
+  if(cur.won){
+    stats.wins++;
+    stats.streak = (stats.lastWin === dayNo-1) ? stats.streak+1 : 1;
+    stats.lastWin = dayNo;
+  } else {
+    stats.streak = 0;
+  }
+  store.set("toko_stats", stats);
+}
+
+function shareText(){
+  const grid = cur.guesses.map(g => g===cur.idx ? "🟩" : "🟥").join("");
+  const head = mode==="daily" ? "tokonoma · خمّن الأنمي Nº" + pad(dayNo+1) : "tokonoma · خمّن الأنمي";
+  return head + "\n" + (cur.won ? "✅ " : "❌ ") + grid + "\nهل تستطيع التفوق عليّ؟ 👇\n" + SITE;
+}
+
+function resultHTML(a){
+  let h = '<div class="result">';
+  if(cur.won){
+    h += '<h2>🎉 أحسنت!</h2><div class="answer">الجواب: <b>' + a.n[0] + '</b> <span class="mono">' + a.n[1] + '</span></div>';
+    if(mode==="daily"){
+      h += '<div>' + REWARD_TEXT + '<br><span class="code" id="code">' + REWARD_CODE + '</span></div>';
+    }
+  } else {
+    h += '<h2>😅 حظ أوفر</h2><div class="answer">الجواب كان: <b>' + a.n[0] + '</b> <span class="mono">' + a.n[1] + '</span></div>';
+  }
+  h += '<div><button class="btn" id="share">نسخ النتيجة</button>' +
+       '<a class="btn alt" id="wa" target="_blank" rel="noopener">واتساب</a></div>';
+  if(mode==="daily"){
+    h += '<div class="stats"><span><b>' + stats.played + '</b>لعبت</span><span><b>' + stats.wins + '</b>فزت</span><span><b>' + stats.streak + '</b>أيام متتالية</span></div>';
+    h += '<div class="next">اللغز التالي بعد <span class="mono" id="cd"></span></div>';
+  }
+  h += '<div><button class="btn alt" id="free">🎲 العب جولة عشوائية</button></div></div>';
+  return h;
+}
+
+function wireResult(){
+  $("#share").addEventListener("click", async () => {
+    const t = shareText();
+    try{ await navigator.clipboard.writeText(t); $("#share").textContent = "تم النسخ ✅"; }
+    catch(e){ prompt("انسخ النتيجة:", t); }
+  });
+  $("#wa").href = "https://wa.me/?text=" + encodeURIComponent(shareText());
+  $("#free").addEventListener("click", startFree);
+  if($("#cd")) countdown();
+}
+
+function startFree(){
+  mode = "free";
+  let i; do{ i = Math.floor(Math.random()*ANIME.length); }while(i===dailyIdx && ANIME.length>1);
+  cur = {idx:i, guesses:[], done:false, won:false};
+  render();
+}
+
+let timer;
+function countdown(){
+  clearInterval(timer);
+  const tick = () => {
+    const el = $("#cd"); if(!el){ clearInterval(timer); return; }
+    const n = new Date(), m = new Date(n.getFullYear(), n.getMonth(), n.getDate()+1);
+    let s = Math.max(0, Math.floor((m-n)/1000));
+    const h = Math.floor(s/3600), mi = Math.floor(s%3600/60); s = s%60;
+    el.textContent = [h,mi,s].map(x => String(x).padStart(2,"0")).join(":");
+    if(m-n <= 0) location.reload();
+  };
+  tick(); timer = setInterval(tick, 1000);
+}
+
+render();
+</script>
+</body>
+</html>
