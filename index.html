@@ -3,249 +3,511 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>tokonoma · كتاب التحدي</title>
+<title>tokonoma · خريطة الكنز</title>
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-  :root{--bg:#1b1412;--page:#F2EADB;--page2:#E9DEC8;--ink:#2b2b2b;--gray:#6b6b6b;--red:#C8281E;--green:#2f7d4f;--gold:#c9a24a;--line:#d9cdb6;--cover:#6e1a15}
+  :root{--bg:#1b1412;--page:#F2EADB;--page2:#E9DEC8;--ink:#2b2b2b;--gray:#6b6b6b;--red:#C8281E;--green:#2f7d4f;--gold:#c9a24a;--line:#d9cdb6;--cover:#6e1a15;--opt:#fffaf0}
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   body{margin:0;background:radial-gradient(circle at 50% 0%,#2c211d,var(--bg));color:var(--ink);font-family:'Tajawal',system-ui,sans-serif;min-height:100vh;display:flex;justify-content:center;padding:18px 14px 40px}
   main{width:100%;max-width:470px}
   .brand{text-align:center;color:var(--gold);font-family:ui-monospace,Menlo,monospace;letter-spacing:.3em;font-size:.75rem;margin-bottom:12px;direction:ltr}
   .book{position:relative;background:var(--cover);border-radius:10px 18px 18px 10px;padding:10px 10px 10px 14px;box-shadow:0 18px 40px #000a,inset 0 0 0 2px #00000040,inset 0 0 0 4px #c9a24a55;perspective:1400px}
   .book::before{content:"";position:absolute;right:0;top:8px;bottom:8px;width:10px;background:linear-gradient(90deg,#0004,#0000);border-radius:0 10px 10px 0;pointer-events:none}
-  #page{background:linear-gradient(90deg,var(--page2),var(--page) 14%,var(--page));border-radius:6px 12px 12px 6px;padding:20px 18px 22px;min-height:440px;transform-origin:right center;position:relative;box-shadow:inset 8px 0 14px -8px #0003}
+  #page{background:linear-gradient(90deg,var(--page2),var(--page) 14%,var(--page));border-radius:6px 12px 12px 6px;padding:20px 18px 22px;min-height:440px;transform-origin:right center;position:relative;box-shadow:inset 8px 0 14px -8px #0003;color:var(--ink)}
+  #page.hell{--page:#2a1411;--page2:#1d0d0b;--ink:#f3e6d3;--gray:#c4a994;--line:#5b2d25;--red:#ff6a3d;--opt:#3a1c17;--green:#e08a2c}
   #page.out{transform:rotateY(78deg);opacity:.25;transition:transform .42s ease,opacity .42s ease}
   #page.in{animation:turnIn .45s ease}
   @keyframes turnIn{from{transform:rotateY(-70deg);opacity:.3}to{transform:none;opacity:1}}
   h1,h2{font-family:'Amiri',serif;margin:.2em 0;text-align:center}
   h1{font-size:2rem}h2{font-size:1.5rem}
-  .sigil{width:92px;height:92px;margin:6px auto 4px;display:block}
-  .sub{text-align:center;color:var(--gray);font-size:.92rem;margin:0 0 12px}
-  .rules{list-style:none;margin:10px 0 16px;padding:0;font-size:.92rem}
-  .rules li{padding:7px 0;border-top:1px dashed var(--line)}
+  .sigil{width:78px;height:78px;margin:2px auto;display:block}
+  .sub{text-align:center;color:var(--gray);font-size:.92rem;margin:0 0 10px}
+  .reward{background:#fffaf0;border:1.5px solid var(--gold);border-radius:12px;padding:10px 14px;margin:10px 0;font-size:.95rem;line-height:1.9;color:#2b2b2b}
+  .reward b{color:#C8281E}
+  .reward small{display:block;color:#6b6b6b;font-size:.78rem;line-height:1.6;margin-top:2px}
+  .rules{list-style:none;margin:8px 0 12px;padding:0;font-size:.88rem}
+  .rules li{padding:5px 0;border-top:1px dashed var(--line)}
   .btn{display:block;width:100%;padding:13px;border-radius:10px;border:1.5px solid var(--ink);background:var(--ink);color:var(--page);font:inherit;font-weight:700;font-size:1rem;cursor:pointer;margin-top:8px;text-align:center;text-decoration:none}
   .btn.alt{background:transparent;color:var(--ink)}
+  .btn.go{background:var(--red);border-color:var(--red);color:#fff}
+  .btn:disabled{opacity:.5}
+  .row{display:flex;gap:8px}.row .btn{margin-top:8px}
   .mono{font-family:ui-monospace,Menlo,monospace;color:var(--red);direction:ltr;display:inline-block}
-  .top{display:flex;justify-content:space-between;align-items:center;font-size:.85rem;color:var(--gray);margin-bottom:8px}
-  .lvl{font-family:'Amiri',serif;font-size:1.25rem;color:var(--ink)}
-  .dots{display:flex;gap:4px;direction:rtl;margin-bottom:10px}
+  .tabs{display:flex;gap:6px;margin:10px 0}
+  .tabs button{flex:1;padding:9px;border:1.5px solid var(--line);background:transparent;border-radius:9px;font:inherit;font-weight:700;color:var(--gray);cursor:pointer}
+  .tabs button.on{background:var(--ink);border-color:var(--ink);color:var(--page)}
+  input{width:100%;padding:12px 13px;margin:5px 0;font:inherit;font-size:1rem;border:1.5px solid var(--line);border-radius:10px;background:#fff;color:#2b2b2b;direction:ltr;text-align:left}
+  input:focus{outline:none;border-color:var(--red)}
+  .err{color:var(--red);font-size:.88rem;text-align:center;min-height:1.3em;margin-top:6px}
+  .top{display:flex;justify-content:space-between;align-items:center;font-size:.85rem;color:var(--gray);margin-bottom:8px;gap:8px}
+  .lvl{font-family:'Amiri',serif;font-size:1.15rem;color:var(--ink)}
+  .dots{display:flex;gap:3px;direction:rtl;margin-bottom:10px}
   .dots i{flex:1;height:5px;border-radius:3px;background:var(--line)}
   .dots i.done{background:var(--green)}.dots i.cur{background:var(--red)}
   .bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin:6px 0 14px}
-  .bar b{display:block;height:100%;width:100%;background:var(--green);transition:width .1s linear,background .3s}
+  .bar b{display:block;height:100%;width:100%;background:var(--green);transition:width .1s linear}
   .bar.low b{background:var(--red)}
   .tag{display:inline-block;font-size:.78rem;padding:2px 10px;border:1px solid var(--red);color:var(--red);border-radius:99px;margin-bottom:8px}
   .q{font-family:'Amiri',serif;font-size:1.3rem;line-height:1.7;margin:4px 0 14px}
-  .opt{display:block;width:100%;text-align:right;padding:12px 14px;margin:8px 0;border:1.5px solid var(--line);border-radius:10px;background:#fffaf0;font:inherit;font-size:1rem;color:var(--ink);cursor:pointer}
-  .opt:active{background:#f4e8d0}
+  .opt{display:block;width:100%;text-align:right;padding:12px 14px;margin:8px 0;border:1.5px solid var(--line);border-radius:10px;background:var(--opt);font:inherit;font-size:1rem;color:var(--ink);cursor:pointer}
+  .opt:active{filter:brightness(.93)}
   .opt.dead{opacity:.35;text-decoration:line-through;pointer-events:none;border-color:var(--red)}
   .msg{min-height:1.5em;text-align:center;font-size:.9rem;color:var(--red);margin-top:8px}
-  .code{display:block;text-align:center;margin:10px auto;padding:9px 16px;border:1.5px dashed var(--red);border-radius:8px;font-family:ui-monospace,Menlo,monospace;font-size:1.3rem;color:var(--red);letter-spacing:.12em;direction:ltr;width:fit-content}
+  .code{display:block;text-align:center;margin:8px auto;padding:9px 16px;border:1.5px dashed var(--red);border-radius:8px;font-family:ui-monospace,Menlo,monospace;font-size:1.25rem;color:var(--red);letter-spacing:.1em;direction:ltr;width:fit-content}
   .stats{display:flex;justify-content:center;gap:24px;margin:10px 0;color:var(--gray);font-size:.85rem;text-align:center}
   .stats b{display:block;font-family:ui-monospace,Menlo,monospace;font-size:1.3rem;color:var(--red);direction:ltr}
-  .small{font-size:.8rem;color:var(--gray);text-align:center;margin-top:10px}
+  .small{font-size:.8rem;color:var(--gray);text-align:center;margin-top:10px;line-height:1.6}
+  .rw{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-top:1px dashed var(--line);font-size:.88rem}
+  .rw .mono{font-size:.95rem}
+  .rw .st{color:var(--gray);font-size:.78rem}
+  .lb{width:100%;border-collapse:collapse;font-size:.95rem}
+  .lb td{padding:8px 4px;border-top:1px dashed var(--line)}
+  .lb td:first-child{width:34px;text-align:center}
+  .lb td:last-child{text-align:left;direction:ltr;font-family:ui-monospace,Menlo,monospace;color:var(--red)}
+  .center{text-align:center}
+  #map{width:100%;height:auto;display:block;border-radius:14px;border:1.5px solid var(--line);margin:6px 0 4px}
+  .pulse{animation:pulse 1.6s ease-in-out infinite}
+  @keyframes pulse{50%{opacity:.3}}
+  .info{background:#fffaf0;border:1.5px solid var(--line);border-radius:12px;padding:10px 14px;margin:8px 0;font-size:.92rem;line-height:1.8;color:#2b2b2b}
+  .info.hellbox{background:#2a1411;border-color:#ff6a3d;color:#f3e6d3}
+  .info b{color:#C8281E}.info.hellbox b{color:#ff9a6d}
   footer{text-align:center;margin-top:14px;font-size:.82rem;color:#b9a98f}
   footer a{color:var(--gold);text-decoration:none;font-weight:700}
 </style>
 </head>
 <body>
 <main>
-  <div class="brand">TOKONOMA · GRIMOIRE</div>
+  <div class="brand">TOKONOMA · TREASURE MAP</div>
   <div class="book"><div id="page"></div></div>
   <footer>من <a href="https://tokonomastore.com" target="_blank" rel="noopener">tokonomastore.com</a></footer>
 </main>
 
 <script>
-/* ============ إعدادات سهلة التعديل ============ */
-const REWARD_CODE = "TOKO10";
-const REWARD_TEXT = "خصم 10% على أي طلب من المتجر";
-const SITE = "tokonomastore.com";
-const T = [30,28,26,24,22,22,20,20,18,18];   // ثواني كل مستوى
-const LIMIT = 360;                            // الوقت الكلي بالثواني (6 دقائق)
-const PENALTY = 8;                            // عقوبة الخطأ في المستويات 1-5 (ثواني)
+/* ============ الإعدادات ============ */
+const SUPABASE_URL = "https://orixllpvddqfyesvfvzn.supabase.co";
+const SUPABASE_KEY = "sb_publishable_mxfNNEHggVk0q5J-wmgmOA_OMMyIPPA";
 
-/* ============ بنك الأسئلة ============
-   p=1 سهل (مستويات 1-3) | p=2 متوسط (4-6) | p=3 صعب (7-8) | p=4 معارك (9-10)
-   الصيغة: [الدرجة, السؤال, الجواب الصحيح, [3 إجابات خاطئة]] */
-const BANK = [
- // ---- سهل ----
- [1,"من هو بطل أنمي ناروتو؟","ناروتو أوزوماكي",["ساسكي أوتشيها","كاكاشي هاتاكي","روك لي"]],
- [1,"ما اسم سفينة طاقم القبعة القشية الأولى في ون بيس؟","غوينغ ميري",["ثاوزند صني","ريد فورس","موبي ديك"]],
- [1,"بماذا يتطور بيكاتشو باستخدام حجر الرعد؟","رايتشو",["بيتشو","رايتشو ألولا","بيكا-كوين"]],
- [1,"ما اسم شقيقة تانجيرو التي تحولت إلى شيطانة؟","نيزوكو",["مايتسوري","شينوبو","كانا"]],
- [1,"ما اسم بطل أنمي هجوم العمالقة؟","إيرين ييغر",["أرمين أرلرت","ليفاي أكرمان","جان كيرشتاين"]],
- [1,"من هو البطل الأصلع الذي يهزم أي عدو بضربة واحدة؟","سايتاما",["غينوس","ميومي","غاروو"]],
- [1,"ما اسم الطفلة التي تقرأ الأفكار في أنمي سباي × فاميلي؟","آنيا",["يور","بوند","كيلي"]],
- [1,"ما اسم الأخوين الكيميائيين في فولميتال ألكيميست؟","إدوارد وألفونس",["روي وريزا","ليو وإيريك","إدوارد وهوهنهايم"]],
- [1,"من ورث قوة ون فور أول من أول مايت؟","إيزوكو ميدوريا",["كاتسوكي باكوغو","شوتو تودوروكي","تينيا إيدا"]],
- [1,"كم سيفاً يستخدم زورو في أسلوبه القتالي الشهير؟","ثلاثة",["اثنان","أربعة","سيف واحد"]],
- [1,"من هو قبطان قراصنة الشعر الأحمر؟","شانكس",["باغي","كايدو","روجر"]],
- [1,"من هو معلم الفريق 7 في ناروتو؟","كاكاشي هاتاكي",["جيرايا","إيروكا","غاي"]],
- [1,"من هو بطل أنمي دكتور ستون الذي يعيد بناء الحضارة بالعلم؟","سنكو إيشيغامي",["تايجو أورا","جينرو","كوهاكو"]],
- [1,"من هو معلم سانجي الذي علّمه الطبخ؟","زيف",["باراتي","كوبي","غين"]],
- // ---- متوسط ----
- [2,"من هو آخر ناجٍ من قبيلة الكورتا في هانتر × هانتر؟","كورابيكا",["ليوريو","كيلوا","هيسوكا"]],
- [2,"ما اسم القانون الأساسي للكيمياء في فولميتال ألكيميست؟","التبادل المتكافئ",["القوة المطلقة","الخلق من العدم","توازن الأرواح"]],
- [2,"ما اسم الفرقة التي تستكشف خارج الأسوار في هجوم العمالقة؟","فيلق الاستطلاع",["الشرطة العسكرية","فيلق الحامية","فيلق التدريب"]],
- [2,"إلى أي فرقة فرسان ينتمي آستا في بلاك كلوفر؟","الثيران السوداء",["الأسود الذهبية","الصقور الزرقاء","الورود الزرقاء"]],
- [2,"كم عدد الوحوش ذات الذيول في عالم ناروتو؟","تسعة",["سبعة","عشرة","ثمانية"]],
- [2,"ما اسم عيون عائلة أوتشيها الخاصة؟","الشارينغان",["البياكوغان","الريناغان","التينسيغان"]],
- [2,"ما اسم توسيع النطاق الخاص بغوجو في جوجتسو كايسن؟","الفراغ اللامحدود",["الضريح الخبيث","الحديقة المتناغمة","المجال اللانهائي"]],
- [2,"ما اسم أقوى شيطان وأول من أنشأ الشياطين في قاتل الشياطين؟","موزان كيبوتسوجي",["دوما","أكازا","كوكوشيبو"]],
- [2,"ما اسم شخصية دفتر الموت البشرية التي استخدمته؟","لايت ياغامي",["ريوك","ميلو","نير"]],
- [2,"ما الذي حوّل البشر إلى حجر في دكتور ستون؟","وميض ضوء غامض",["وباء قاتل","غاز بركاني","سحر شرير"]],
- [2,"ما اسم زعيم الثيران السوداء في بلاك كلوفر؟","يامي سوكيرو",["جاك الجزّار","ويليام فانغارد","نوزل سيلفا"]],
- [2,"ما اسم عالم لعبة الواقع الافتراضي في سورد آرت أونلاين؟","أينكراد",["ألفهايم","غغو","أندرفرد"]],
- // ---- صعب (فخاخ) ----
- [3,"ما الاسم الحقيقي لفاكهة لوفي التي كُشف عنها لاحقاً؟","هيتو هيتو نو مي موديل: نيكا",["غومو غومو نو مي موديل: ثور","موشا موشا نو مي","غيرا غيرا نو مي"]],
- [3,"ما اسم نظام القوة في أنمي هانتر × هانتر؟","نين",["تشاكرا","كي","هاكي"]],
- [3,"ما الثمن الذي دفعه ألفونس بعد محاولة إحياء والدته؟","جسده كاملاً",["ذراعه فقط","بصره","ذاكرته"]],
- [3,"كم عدد أعضاء الأقمار العليا في قاتل الشياطين؟","ستة",["اثنا عشر","ثلاثة","تسعة"]],
- [3,"ما اسم سيف زورو الأبيض الذي ورثه من صديقته كويينا؟","وادو إيتشيمونجي",["سان داي كيتيتسو","شوسوي","إنما"]],
- [3,"ما اسم نطاق سوكونا في جوجتسو كايسن؟","الضريح الخبيث",["الفراغ اللامحدود","النطاق الدامي","الحديقة المتناغمة"]],
- [3,"ما اسم البانكاي الأول لإيشيغو في بليتش؟","تنسا زانغيتسو",["هوغيوكو","غرينديل","سينبونزاكورا"]],
- [3,"ما اسم الأب الذي حقن إيرين بالمصل في هجوم العمالقة؟","غريشا ييغر",["زيك ييغر","كروغر","ديفيد"]],
- [3,"ماذا يقدّم الشينيغامي مقابل «عيون الشينيغامي» في مذكرة الموت؟","نصف عمره المتبقي",["ذاكرته","اسمه","قدرته على الكتابة"]],
- // ---- معارك ----
- [4,"كيف انتهت المعركة الأخيرة بين ناروتو وساسكي في وادي النهاية؟","فقد كلٌّ منهما ذراعاً وانتهت بالتعادل",["قتل ناروتو ساسكي","هرب ساسكي","قتل ساسكي ناروتو"]],
- [4,"من الشيطان الذي قتل كيوجورو رينغوكو في قطار اللامحدود؟","أكازا",["دوما","رومي","غيوتارو"]],
- [4,"من انتصر في معركة شينجوكو بين غوجو وسوكونا؟","سوكونا",["غوجو","يوجي","لم تُحسم"]],
- [4,"ما التحول الذي ظهر لأول مرة في معركة غوكو ضد فريزا؟","سوبر ساياجين",["سوبر ساياجين 3","الغريزة الفائقة","سوبر ساياجين بلو"]],
- [4,"من حسم المعركة ضد سيل بكاميهاميها مشتركة مع والده؟","غوهان",["فيجيتا","تيرونكس","غوتين"]],
- [4,"ما الضربة التي أنهى بها أول مايت معركته الحاسمة ضد أول فور وان؟","يونايتد ستيتس أوف سماش",["ديترويت سماش","شوت ستايل","غان سماش"]],
- [4,"من هزم زورو في أول مواجهة بينهما ببارتي؟","ميهوك",["كروغر","أرلونغ","لوتشي"]],
- [4,"من الذي هزم آس وأسره في ون بيس؟","باربا السوداء",["أكاينو","باغي","كروكودايل"]],
- [4,"ما نقطة الضعف الكبرى لقوة كروكودايل الرملية؟","الماء",["النار","الرياح","الجليد"]],
- [4,"ما سلاح نيترو الذي أضعف به ميروم في معركتهما؟","قنبلة سامة",["سيف الهاكي","تقنية الجاجنكن","الضربة الأخيرة بالنين المقدس"]],
- [4,"كيف انتهت حياة إل في مذكرة الموت؟","كتبت ريم اسمه في الدفتر",["كتب لايت اسمه","انتحر","قتله ميلو"]],
- [4,"ما الذي أنهى حياة إيتاتشي بعد معركته مع ساسكي؟","مرضه",["قتله ساسكي","قتله مادارا","انتحر"]],
-];
-const P = BANK.map((r,i)=>({id:i,p:r[0],q:r[1],a:r[2],w:r[3]}));
+const SITE = "tokonomastore.com";
+const INSTAGRAM = "tokonomastore";
+const READY = /^https:\/\//.test(SUPABASE_URL) && SUPABASE_KEY.length > 20 && !/PASTE/.test(SUPABASE_URL + SUPABASE_KEY);
 
 /* ============ أدوات ============ */
-const $=s=>document.querySelector(s);
-const rnd=n=>Math.floor(Math.random()*n);
-const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]];}return a;};
-const store={get(k){try{return JSON.parse(localStorage.getItem(k));}catch(e){return null;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
-const fmt=s=>Math.floor(s/60)+":"+String(Math.floor(s%60)).padStart(2,"0");
-const poolOf=lv=>lv<3?1:lv<6?2:lv<8?3:4;
-const SIGIL='<svg class="sigil" viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="none" stroke="#6e1a15" stroke-width="2"/><circle cx="50" cy="50" r="38" fill="none" stroke="#c9a24a" stroke-width="1.5"/><path d="M50 8 L56 44 L92 50 L56 56 L50 92 L44 56 L8 50 L44 44 Z" fill="none" stroke="#6e1a15" stroke-width="1.5"/><text x="50" y="62" text-anchor="middle" font-size="34" font-family="serif" fill="#C8281E">床</text></svg>';
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const fmt = s => Math.floor(s / 60) + ":" + String(Math.floor(s % 60)).padStart(2, "0");
+const SIGIL = '<svg class="sigil" viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="none" stroke="#6e1a15" stroke-width="2"/><circle cx="50" cy="50" r="38" fill="none" stroke="#c9a24a" stroke-width="1.5"/><path d="M50 8 L56 44 L92 50 L56 56 L50 92 L44 56 L8 50 L44 44 Z" fill="none" stroke="#6e1a15" stroke-width="1.5"/><text x="50" y="62" text-anchor="middle" font-size="34" font-family="serif" fill="#C8281E">床</text></svg>';
+const lsGet = k => { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } };
+const lsSet = (k, v) => { try { v === null ? localStorage.removeItem(k) : localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+const ckOf = b => b >= 7 ? 7 : b >= 4 ? 4 : 0;
+const placeName = p => p === 0 ? "الشاطئ" : "الجزيرة " + p;
 
-/* ============ الحالة ============ */
-let S=null, tick=null;
-let rec=store.get("toko_rec")||{wins:0,best:0};
+/* ============ الاتصال بالخادم (Supabase) ============ */
+const EMAIL = u => u.toLowerCase() + "@tokonoma-players.com";
+let sess = lsGet("toko_sess");
 
-function pickQ(lv){
-  const pool=poolOf(lv);
-  let c=P.filter(x=>x.p===pool&&!S.used[x.id]);
-  if(!c.length){P.filter(x=>x.p===pool).forEach(x=>delete S.used[x.id]);c=P.filter(x=>x.p===pool);}
-  const q=c[rnd(c.length)];S.used[q.id]=1;return q;
+function setSess(j) {
+  sess = { access_token: j.access_token, refresh_token: j.refresh_token,
+           expires_at: j.expires_at || (Math.floor(Date.now() / 1000) + (j.expires_in || 3600)) };
+  lsSet("toko_sess", sess);
 }
-function newRun(){
-  S={lv:0,used:{},q:null,opts:[],end:0,start:Date.now(),cursed:4+rnd(4),shuffled:false,busy:true,msg:"",over:false,falls:0};
-  loadLevel();
+function clearSess() { sess = null; lsSet("toko_sess", null); }
+
+async function getToken() {
+  if (!sess) return null;
+  if (sess.expires_at - Math.floor(Date.now() / 1000) < 60) {
+    try {
+      const j = await http("/auth/v1/token?grant_type=refresh_token", { body: { refresh_token: sess.refresh_token }, auth: false });
+      setSess(j);
+    } catch (e) { clearSess(); return null; }
+  }
+  return sess.access_token;
 }
-function loadLevel(){
-  S.q=pickQ(S.lv);
-  S.opts=shuffle([{t:S.q.a,ok:1},...S.q.w.map(t=>({t,ok:0}))]);
-  S.end=Date.now()+T[S.lv]*1000;
-  S.shuffled=false;S.busy=false;
+async function http(path, { method = "POST", body, auth = true } = {}) {
+  const h = { apikey: SUPABASE_KEY, "Content-Type": "application/json" };
+  const tok = auth ? await getToken() : null;
+  if (tok) h.Authorization = "Bearer " + tok;
+  else if (SUPABASE_KEY.startsWith("eyJ")) h.Authorization = "Bearer " + SUPABASE_KEY;
+  let r;
+  try { r = await fetch(SUPABASE_URL + path, { method, headers: h, body: body ? JSON.stringify(body) : undefined }); }
+  catch (e) { const er = new Error("network"); er.code = "network"; throw er; }
+  let j = null; try { j = await r.json(); } catch (e) {}
+  if (!r.ok) {
+    const er = new Error((j && (j.message || j.msg || j.error_description || j.error)) || "error");
+    er.code = (j && (j.error_code || j.code)) || ""; er.status = r.status; throw er;
+  }
+  return j;
+}
+const rpc = (fn, args, auth = true) => http("/rest/v1/rpc/" + fn, { body: args || {}, auth });
+
+function errAr(e) {
+  const m = (e && e.message || "") + " " + (e && e.code || "");
+  const has = s => m.toLowerCase().includes(s);
+  if (has("network")) return "تعذّر الاتصال، تحقق من الإنترنت وحاول ثانية";
+  if (has("user_already_exists") || has("already registered") || has("username_taken")) return "هذا الاسم محجوز، اختر اسماً آخر";
+  if (has("invalid_credentials") || has("invalid login")) return "الاسم أو كلمة المرور غير صحيحة";
+  if (has("bad_username")) return "الاسم: من 3 إلى 16 حرفاً إنجليزياً أو أرقاماً أو _ فقط";
+  if (has("weak_password") || has("at least 6")) return "كلمة المرور قصيرة (6 أحرف على الأقل)";
+  if (has("too_fast")) return "انتظر بضع ثوانٍ قبل القفز إلى جزيرة جديدة";
+  if (has("daily_limit")) return "وصلت إلى الحد اليومي للمحاولات، عد غداً";
+  if (has("rate_limit") || has("rate limit")) return "محاولات كثيرة، انتظر قليلاً";
+  if (has("confirm_required")) return "إعداد الخادم غير مكتمل (تأكيد البريد مفعّل)";
+  if (has("jwt") || has("not_authenticated")) return "انتهت الجلسة، سجّل الدخول من جديد";
+  return "حدث خطأ: " + ((e && e.message) || "");
 }
 
-/* ============ الشاشات ============ */
-function flip(fn){
-  const p=$("#page");p.classList.add("out");
-  setTimeout(()=>{fn();p.classList.remove("out");p.classList.add("in");setTimeout(()=>p.classList.remove("in"),460);},420);
+/* ============ التنقل وتقليب الصفحات ============ */
+let ME = null, C = { pos: 0, best_pos: 0, ck: 0, drowns: 0 }, G = null, tick = null, anim_token = 0;
+
+function flip(fn) {
+  const p = $("#page"); p.classList.add("out");
+  setTimeout(() => { fn(); p.classList.remove("out"); p.classList.add("in"); setTimeout(() => p.classList.remove("in"), 460); }, 420);
 }
-function cover(){
-  clearInterval(tick);
-  $("#page").innerHTML=SIGIL+'<h1>كتاب التحدي</h1><p class="sub">عشرة مستويات. الفخاخ كثيرة. والفائز واحد من كل مئة.</p>'+
-  '<ul class="rules"><li>⏳ لكل مستوى وقت محدد، ولكل الرحلة <b>'+fmt(LIMIT)+'</b> دقائق.</li>'+
-  '<li>❌ المستويات 1–5: كل خطأ يسرق منك '+PENALTY+' ثوانٍ.</li>'+
-  '<li>🩸 المستويات 6–8: خطأ واحد يرجعك مستوى للوراء.</li>'+
-  '<li>☠️ المستويان 9–10: خطأ واحد يرجعك مستويين.</li>'+
-  '<li>👁 احذر الصفحات الملعونة، فقد تتبدل الخيارات أمام عينيك.</li>'+
-  '<li>🎁 من أنهى الصفحات العشر في الوقت المحدد نال: '+REWARD_TEXT+'.</li></ul>'+
-  '<button class="btn" id="go">افتح الكتاب 📖</button>'+
-  '<div class="small">أفضل مستوى وصلت إليه: '+rec.best+' / 10 · انتصاراتك: '+rec.wins+'</div>';
-  $("#go").onclick=()=>{newRun();flip(()=>{drawLevel();run();});};
-}
-function drawLevel(){
-  const q=S.q,lv=S.lv;
-  let dots="";for(let i=0;i<10;i++)dots+='<i class="'+(i<lv?"done":i===lv?"cur":"")+'"></i>';
-  $("#page").innerHTML='<div class="top"><span class="lvl">المستوى '+(lv+1)+' / 10</span><span>الوقت الكلي <b class="mono" id="gt"></b></span></div>'+
-   '<div class="dots">'+dots+'</div>'+
-   '<div class="bar" id="bar"><b></b></div>'+
-   (q.p===4?'<span class="tag">⚔️ معركة</span>':'')+
-   '<div class="q">'+q.q+'</div><div id="opts"></div><div class="msg" id="msg">'+S.msg+'</div>';
-  S.msg="";drawOpts();
-}
-function drawOpts(){
-  $("#opts").innerHTML=S.opts.map((o,i)=>'<button class="opt'+(o.dead?" dead":"")+'" data-i="'+i+'">'+o.t+'</button>').join("");
-  document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>answer(+b.dataset.i));
-}
-function run(){
-  clearInterval(tick);
-  tick=setInterval(()=>{
-    if(!S||S.over)return;
-    const now=Date.now(),el=(now-S.start)/1000;
-    const gt=$("#gt");if(gt)gt.textContent=fmt(Math.max(0,LIMIT-el));
-    if(el>=LIMIT){return lose("انتهى الوقت الكلي للرحلة ⌛");}
-    if(S.busy)return;
-    const left=(S.end-now)/1000,bar=$("#bar");
-    if(bar){bar.firstChild.style.width=Math.max(0,left/T[S.lv]*100)+"%";bar.classList.toggle("low",left<6);}
-    if(S.lv===S.cursed&&!S.shuffled&&left<=8&&left>0){
-      S.shuffled=true;S.opts=shuffle(S.opts);drawOpts();
-      const m=$("#msg");if(m)m.textContent="👁 الصفحة ملعونة! الخيارات تبدّلت";
+function show(html, hell) { const p = $("#page"); p.classList.toggle("hell", !!hell); p.innerHTML = html; }
+
+const REWARD_BOX = '<div class="reward">🎁 <b>تجاوز الجزيرة 5 = خصم 10%</b> على طلبك (مرة كل يوم)<br>🏆 <b>الوصول إلى الجزيرة 10 = مجسم أنمي مجاني!</b>' +
+  '<small>خريطة من 10 جزر، في كل جزيرة 15 سؤالاً. الجزر 1–5 مدتها 7 دقائق. ومن الجزيرة 6 يبدأ <b>الجحيم 🔥</b>: أسئلة أصعب و5 دقائق فقط. إن انتهى وقتك تغرق 🌊 وتعود إلى آخر نقطة حفظ (الجزيرة 4 أو 7).</small></div>';
+
+/* ============ الصفحة الأولى ============ */
+async function home(msg) {
+  clearInterval(tick); G = null; anim_token++;
+  if (!READY) {
+    return show(SIGIL + '<h1>خريطة الكنز</h1><p class="sub">اللعبة لم تُربط بقاعدة البيانات بعد.<br>ضع بيانات Supabase في أول الملف.</p>');
+  }
+  if (sess) {
+    show(SIGIL + '<h1>خريطة الكنز</h1><p class="sub">جارٍ فتح الكتاب...</p>');
+    try {
+      ME = await rpc("get_me");
+      if (!ME.username) { clearSess(); ME = null; } else C = ME.campaign;
+    } catch (e) {
+      if (e.code === "network") { return show(SIGIL + '<p class="sub">' + errAr(e) + '</p><button class="btn" id="rt">إعادة المحاولة</button>'), $("#rt").onclick = () => home(); }
+      clearSess(); ME = null;
     }
-    if(left<=0)fall("انتهى وقت المستوى ⏳");
-  },100);
+  }
+  ME ? homeIn(msg) : homeOut(msg);
 }
-function answer(i){
-  if(S.busy||S.over)return;
-  const o=S.opts[i];
-  if(o.ok){
-    S.busy=true;
-    if(S.lv===9)return win();
-    flip(()=>{S.lv++;loadLevel();drawLevel();});
-  } else if(S.lv<5){
-    o.dead=true;S.end-=PENALTY*1000;
-    const b=document.querySelectorAll(".opt")[i];if(b)b.classList.add("dead");
-    const m=$("#msg");if(m)m.textContent="خطأ! خسرت "+PENALTY+" ثوانٍ";
-  } else fall("إجابة خاطئة ❌");
+
+let tab = "login";
+function homeOut(msg) {
+  show(SIGIL + '<h1>خريطة الكنز</h1><p class="sub">عشر جزر. خمس منها في الجحيم. والمجسم ينتظر في آخر جزيرة.</p>' + REWARD_BOX +
+    '<div class="tabs"><button id="tl" class="' + (tab === "login" ? "on" : "") + '">دخول</button><button id="tr" class="' + (tab === "reg" ? "on" : "") + '">حساب جديد</button></div>' +
+    '<input id="u" placeholder="اسم اللاعب (English / أرقام / _)" autocomplete="username" autocapitalize="none" maxlength="16">' +
+    '<input id="p" type="password" placeholder="كلمة المرور (6 أحرف على الأقل)" autocomplete="' + (tab === "reg" ? "new-password" : "current-password") + '">' +
+    '<div class="err" id="err">' + esc(msg || "") + '</div>' +
+    '<button class="btn" id="sub">' + (tab === "reg" ? "إنشاء الحساب وفتح الخريطة" : "دخول") + '</button>' +
+    '<button class="btn alt" id="lb">🏆 ترتيب الأسبوع</button>' +
+    '<div class="small">' + (tab === "reg" ? "اسمك سيظهر في ترتيب الأسبوع. احفظ كلمة مرورك جيداً، لا توجد طريقة لاستعادتها، ولا تستعمل كلمة مرور من حساباتك الأخرى." : "الدخول يحفظ تقدمك وأكوادك على أي هاتف.") + '</div>');
+  $("#tl").onclick = () => { tab = "login"; homeOut(); };
+  $("#tr").onclick = () => { tab = "reg"; homeOut(); };
+  $("#lb").onclick = () => flip(leaderboard);
+  $("#sub").onclick = submitAuth;
+  $("#p").addEventListener("keydown", e => { if (e.key === "Enter") submitAuth(); });
 }
-function fall(why){
-  if(S.busy)return;S.busy=true;S.falls++;
-  const back=S.lv<5?(S.lv>0?1:0):S.lv<8?1:2;
-  const nl=Math.max(0,S.lv-back);
-  flip(()=>{S.msg=why+(back?" · عدت إلى المستوى "+(nl+1):" · أعد المحاولة");S.lv=nl;loadLevel();drawLevel();});
+async function submitAuth() {
+  const u = $("#u").value.trim(), p = $("#p").value, err = $("#err"), b = $("#sub");
+  if (!/^[A-Za-z0-9_]{3,16}$/.test(u)) { err.textContent = errAr(new Error("bad_username")); return; }
+  if (p.length < 6) { err.textContent = errAr(new Error("weak_password")); return; }
+  b.disabled = true; err.textContent = "";
+  try {
+    if (tab === "reg") {
+      const j = await http("/auth/v1/signup", { body: { email: EMAIL(u), password: p }, auth: false });
+      if (!j.access_token) throw new Error("confirm_required");
+      setSess(j);
+      try { await rpc("create_profile", { p_username: u }); }
+      catch (e) { clearSess(); throw e; }
+    } else {
+      const j = await http("/auth/v1/token?grant_type=password", { body: { email: EMAIL(u), password: p }, auth: false });
+      setSess(j);
+      const me = await rpc("get_me");
+      if (!me.username) await rpc("create_profile", { p_username: u });
+    }
+    flip(() => home());
+  } catch (e) { err.textContent = errAr(e); b.disabled = false; }
 }
-function record(){
-  rec.best=Math.max(rec.best,S.lv+1>10?10:S.lv);store.set("toko_rec",rec);
+
+function homeIn(msg) {
+  const rw = (ME.rewards || []).map(r =>
+    '<div class="rw"><div><span class="mono">' + esc(r.code) + '</span><div class="st">' + (r.kind === "figurine" ? "🏆 مجسم مجاني" : "🎁 خصم 10%") + ' · ' + (r.claimed ? "✅ تم تسليمها" : "⏳ لم تُستلم بعد") + '</div></div>' +
+    '<button class="btn alt" style="width:auto;margin:0;padding:7px 12px;font-size:.8rem" data-c="' + esc(r.code) + '">نسخ</button></div>').join("");
+  show(SIGIL + '<h2>أهلاً <span class="mono">' + esc(ME.username) + '</span></h2>' + REWARD_BOX +
+    '<div class="stats"><span><b>' + C.pos + '</b>موقعك (جزيرة)</span><span><b>' + ME.islands_cleared + '</b>جزر أُنجزت</span><span><b>' + ME.campaigns_won + '</b>مجسمات 🏆</span></div>' +
+    '<div class="small" style="margin:0">أنت الآن على: <b>' + placeName(C.pos) + '</b> · نقطة الحفظ: <b>' + placeName(ckOf(C.best_pos)) + '</b></div>' +
+    '<div class="err" id="err">' + esc(msg || "") + '</div>' +
+    '<button class="btn go" id="go">🗺 افتح خريطة الكنز</button>' +
+    '<div class="row"><button class="btn alt" id="lb">🏆 الترتيب</button><button class="btn alt" id="rules">📜 القواعد</button></div>' +
+    (rw ? '<div style="margin-top:12px"><b>أكوادك</b>' + rw + '<div class="small">لاستلام جائزتك أرسل الكود مع اسم حسابك إلى إنستغرام <b>' + INSTAGRAM + '</b>.</div></div>' : '') +
+    '<button class="btn alt" id="out" style="margin-top:14px;font-size:.85rem">تسجيل الخروج</button>');
+  $("#go").onclick = () => flip(() => mapScreen());
+  $("#lb").onclick = () => flip(leaderboard);
+  $("#rules").onclick = () => flip(rulesPage);
+  $("#out").onclick = () => { clearSess(); ME = null; flip(() => homeOut()); };
+  document.querySelectorAll("[data-c]").forEach(b => b.onclick = async () => { try { await navigator.clipboard.writeText(b.dataset.c); b.textContent = "تم ✅"; } catch (e) { prompt("انسخ الكود:", b.dataset.c); } });
 }
-function lose(why){
-  if(!S||S.over)return;S.over=true;clearInterval(tick);record();
-  const reached=S.lv+1;
-  flip(()=>{$("#page").innerHTML=SIGIL+'<h2>أُغلق الكتاب 📕</h2><p class="sub">'+why+'<br>وصلت إلى المستوى '+reached+' من 10</p>'+
-   '<div class="stats"><span><b>'+reached+'</b>أعلى مستوى</span><span><b>'+S.falls+'</b>مرات السقوط</span></div>'+
-   '<button class="btn" id="again">حاول من جديد 🔁</button><div class="small">تتغير الصفحات والأسئلة عشوائياً في كل مرة.</div>';
-   $("#again").onclick=()=>{newRun();flip(()=>{drawLevel();run();});};});
+
+function rulesPage() {
+  show('<h2>📜 قواعد الخريطة</h2>' + REWARD_BOX +
+    '<ul class="rules">' +
+    '<li>🗺 عشر جزر، في كل جزيرة <b>15 سؤالاً</b> (15 مستوى). تقفز إلى الجزيرة التالية عند إنهاء الـ15.</li>' +
+    '<li>⏳ الجزر 1–5: <b>7 دقائق</b> لكل جزيرة. الجزر 6–10 (الجحيم 🔥): <b>5 دقائق</b> فقط.</li>' +
+    '<li>🌊 إن انتهى وقت الجزيرة <b>تغرق</b> وتعود إلى آخر نقطة حفظ.</li>' +
+    '<li>🚩 نقطتا الحفظ: <b>الجزيرة 4</b> و<b>الجزيرة 7</b>. قبل الجزيرة 4 تعود إلى الشاطئ.</li>' +
+    '<li>❌ الأخطاء داخل الجزيرة: عقوبة وقت في أول المستويات، ثم رجوع مستوى، ثم مستويين في الآخر.</li>' +
+    '<li>🔥 في الجحيم: وقت أقل لكل سؤال، وعقوبات أقسى، وأسئلة للخبراء.</li>' +
+    '<li>🕳 في كل جزيرة <b>فخ مخفي</b>: الخطأ فيه يرجعك 3 مستويات.</li>' +
+    '<li>👁 الصفحات الملعونة قد تبدّل خيارات السؤال أمام عينيك.</li>' +
+    '<li>🎲 الأسئلة تتغير في كل رحلة، والخادم هو الذي يحكم بالوقت والأجوبة.</li></ul>' +
+    '<button class="btn" id="bk">رجوع</button>');
+  $("#bk").onclick = () => flip(() => home());
 }
-function win(){
-  S.over=true;clearInterval(tick);
-  const el=Math.floor((Date.now()-S.start)/1000);
-  rec.wins++;rec.best=10;store.set("toko_rec",rec);
-  const share="📖 أنهيت كتاب التحدي من tokonoma في "+fmt(el)+" 🏆\nهل تقدر؟ 👇\n"+SITE;
-  flip(()=>{$("#page").innerHTML=SIGIL+'<h2>🏆 أتممت الكتاب!</h2><p class="sub">أنهيت الصفحات العشر في <b class="mono">'+fmt(el)+'</b></p>'+
-   '<div style="text-align:center">'+REWARD_TEXT+'</div><span class="code">'+REWARD_CODE+'</span>'+
-   '<div class="stats"><span><b>'+rec.wins+'</b>انتصاراتك</span><span><b>'+Math.max(0,10-rec.wins)+'</b>للمجسم المجاني</span></div>'+
-   '<button class="btn" id="cp">نسخ النتيجة</button><a class="btn alt" target="_blank" rel="noopener" href="https://wa.me/?text='+encodeURIComponent(share)+'">مشاركة على واتساب</a>'+
-   '<button class="btn alt" id="again">كتاب جديد 🔁</button>'+
-   '<div class="small">في هذه النسخة التجريبية الانتصارات محفوظة على جهازك فقط، وستُربط بحسابك قريباً.</div>';
-   $("#cp").onclick=async()=>{try{await navigator.clipboard.writeText(share);$("#cp").textContent="تم النسخ ✅";}catch(e){prompt("انسخ:",share);}};
-   $("#again").onclick=()=>{newRun();flip(()=>{drawLevel();run();});};});
+
+async function leaderboard() {
+  show('<h2>🏆 ترتيب الأسبوع</h2><p class="sub">جارٍ التحميل...</p>');
+  try {
+    const rows = await rpc("leaderboard", {}, !!sess);
+    const medal = i => ["🥇", "🥈", "🥉"][i] || (i + 1);
+    show('<h2>🏆 ترتيب الأسبوع</h2><p class="sub">يتجدد كل يوم اثنين · الأبعد وصولاً على الخريطة</p>' +
+      (rows.length ? '<table class="lb">' + rows.map((r, i) => '<tr><td>' + medal(i) + '</td><td>' + esc(r.username) + '</td><td>' + (r.island >= 10 ? "🏆 " : "") + 'الجزيرة ' + r.island + (r.wins > 1 ? ' ×' + r.wins : '') + '</td></tr>').join("") + '</table>'
+                   : '<p class="sub">لم يُكمل أحد جزيرة هذا الأسبوع. كن الأول! 🔥</p>') +
+      '<button class="btn" id="bk">رجوع</button>');
+  } catch (e) { show('<h2>🏆 ترتيب الأسبوع</h2><p class="sub">' + esc(errAr(e)) + '</p><button class="btn" id="bk">رجوع</button>'); }
+  $("#bk").onclick = () => flip(() => home());
 }
-cover();
+
+/* ============ خريطة الكنز ============ */
+const POS = [ {x:180,y:548},
+  {x:92,y:484},{x:258,y:436},{x:100,y:388},{x:260,y:340},{x:96,y:292},
+  {x:256,y:244},{x:100,y:196},{x:252,y:148},{x:112,y:100},{x:236,y:52} ];
+
+function mapSVG(mark) {
+  let s = '<svg id="map" viewBox="0 0 360 596" xmlns="http://www.w3.org/2000/svg">' +
+    '<defs><linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">' +
+    '<stop offset="0" stop-color="#2a0f0c"/><stop offset=".40" stop-color="#5b241b"/><stop offset=".47" stop-color="#9fc4c1"/><stop offset="1" stop-color="#d7e7e1"/></linearGradient></defs>' +
+    '<rect width="360" height="596" rx="14" fill="url(#sea)"/>';
+  [[30,520],[300,540],[40,430],[310,470],[150,420],[20,340],[190,300],[320,390],[150,560]].forEach(w =>
+    s += '<path d="M' + w[0] + ' ' + w[1] + ' q6 -6 12 0 t12 0" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="1.6"/>');
+  [[30,60],[310,100],[60,150],[320,200],[150,30],[200,120],[30,230]].forEach(w =>
+    s += '<circle class="pulse" cx="' + w[0] + '" cy="' + w[1] + '" r="2.4" fill="#ff6a3d"/>');
+  s += '<text x="62" y="262" font-size="13" font-weight="700" fill="#ff9a6d" text-anchor="middle">🔥 منطقة الجحيم 🔥</text>';
+  for (let i = 1; i <= 10; i++) {
+    const a = POS[i - 1], b = POS[i], done = i <= mark, hell = i >= 6;
+    s += '<path d="M' + a.x + ' ' + (a.y - 4) + ' Q' + ((a.x + b.x) / 2) + ' ' + (((a.y + b.y) / 2) - 18) + ' ' + b.x + ' ' + (b.y - 4) + '" fill="none" stroke="' + (done ? "#8a5a2b" : (hell ? "#ff9a6d" : "#ffffff")) + '" stroke-width="' + (done ? 4 : 2.2) + '" stroke-linecap="round"' + (done ? '' : ' stroke-dasharray="3 7" stroke-opacity=".8"') + '/>';
+  }
+  s += '<ellipse cx="180" cy="560" rx="78" ry="22" fill="#e7d4a5" stroke="#8a6a3a" stroke-width="2"/>' +
+       '<text x="180" y="580" font-size="12" font-weight="700" fill="#6e4a1a" text-anchor="middle">🏖 الشاطئ</text>';
+  for (let i = 1; i <= 10; i++) {
+    const p = POS[i], hell = i >= 6, reached = i <= mark;
+    const sand = hell ? "#4a2118" : (reached ? "#f0dca0" : "#e7d4a5"), grass = hell ? "#8c2f1c" : (reached ? "#5fa862" : "#7fb57a");
+    const rim = hell ? "#ff6a3d" : "#8a6a3a";
+    s += '<g>';
+    if (hell) s += '<ellipse class="pulse" cx="' + p.x + '" cy="' + p.y + '" rx="38" ry="23" fill="none" stroke="#ff6a3d" stroke-width="2"/>';
+    s += '<ellipse cx="' + p.x + '" cy="' + p.y + '" rx="32" ry="19" fill="' + sand + '" stroke="' + rim + '" stroke-width="2"/>' +
+         '<ellipse cx="' + p.x + '" cy="' + (p.y - 1) + '" rx="23" ry="13" fill="' + grass + '"/>' +
+         '<text x="' + p.x + '" y="' + (p.y + 6) + '" font-size="17" font-weight="700" fill="#fff" text-anchor="middle" font-family="ui-monospace,Menlo,monospace">' + i + '</text>';
+    if (i === 4 || i === 7) s += '<path d="M' + (p.x + 22) + ' ' + (p.y - 8) + ' v-24" stroke="#4a3a2a" stroke-width="2"/><path d="M' + (p.x + 22) + ' ' + (p.y - 32) + ' l15 6 l-15 6 z" fill="' + (reached ? "#c9a24a" : "#C8281E") + '"/>';
+    if (i === 5) s += '<text x="' + (p.x - 30) + '" y="' + (p.y - 14) + '" font-size="17">🎟</text>';
+    if (i === 10) s += '<text x="' + p.x + '" y="' + (p.y - 26) + '" font-size="26" text-anchor="middle">🏆</text>';
+    s += '</g>';
+  }
+  s += '<g id="fx"></g><g id="hero">' + HERO_SVG + '</g></svg>';
+  return s;
+}
+const HERO_SVG = '<ellipse cx="0" cy="3" rx="11" ry="3.5" fill="#0004"/>' +
+  '<path d="M-4 -7 L-5 2 M4 -7 L5 2" stroke="#2b2b2b" stroke-width="3" stroke-linecap="round"/>' +
+  '<path d="M-7 -19 L-13 -10 M7 -19 L13 -10" stroke="#2b2b2b" stroke-width="3" stroke-linecap="round"/>' +
+  '<rect x="-7" y="-23" width="14" height="17" rx="4" fill="#2f7d4f" stroke="#2b2b2b" stroke-width="1.5"/>' +
+  '<circle cx="0" cy="-30" r="8" fill="#f3c9a0" stroke="#2b2b2b" stroke-width="1.5"/>' +
+  '<path d="M-9 -32 Q0 -46 9 -32 Z" fill="#C8281E" stroke="#2b2b2b" stroke-width="1.2"/>' +
+  '<circle cx="-3" cy="-30" r="1" fill="#2b2b2b"/><circle cx="3" cy="-30" r="1" fill="#2b2b2b"/>';
+
+function runAnim(ms, fn, tok) {
+  return new Promise(res => {
+    const t0 = performance.now();
+    (function f(t) {
+      if (tok !== anim_token) return res(false);
+      const k = Math.min(1, (t - t0) / ms); fn(k);
+      k < 1 ? requestAnimationFrame(f) : res(true);
+    })(t0);
+  });
+}
+function setHero(x, y, o, sc) {
+  const h = $("#hero"); if (!h) return;
+  h.setAttribute("transform", "translate(" + x.toFixed(1) + "," + y.toFixed(1) + ") scale(" + (sc || 1) + ")");
+  h.style.opacity = o === undefined ? 1 : o;
+}
+function heroAt(i) { setHero(POS[i].x, POS[i].y - 6); }
+function arc(a, b, k, lift) { return { x: a.x + (b.x - a.x) * k, y: a.y + (b.y - a.y) * k - Math.sin(Math.PI * k) * lift }; }
+function redraw(mark) { const m = $("#map"); if (!m) return; m.outerHTML = mapSVG(mark); }
+
+async function doJump(from, to, tok) {
+  const A = POS[from], B = POS[to];
+  const ok = await runAnim(1100, k => { const p = arc(A, B, k, 62); setHero(p.x, p.y - 6); }, tok);
+  if (ok) heroAt(to);
+  return ok;
+}
+async function doDrown(from, to, tok) {
+  const A = POS[from], B = POS[to], K = 0.6;
+  let ok = await runAnim(750, k => { const p = arc(A, B, k * K, 62); setHero(p.x, p.y - 6); }, tok); if (!ok) return false;
+  const p0 = arc(A, B, K, 62), sx = p0.x, wy = (A.y + B.y) / 2 + 18;
+  ok = await runAnim(650, k => { setHero(sx + k * 6, p0.y - 6 + (wy - p0.y) * k * k, 1, 1 - 0.1 * k); }, tok); if (!ok) return false;
+  const fx = $("#fx"); if (!fx) return false;
+  fx.innerHTML = '<circle id="r1" cx="' + sx + '" cy="' + wy + '" r="2" fill="none" stroke="#fff" stroke-width="2.5"/><circle id="r2" cx="' + sx + '" cy="' + wy + '" r="2" fill="none" stroke="#fff" stroke-width="1.8"/>' +
+    '<circle id="b1" cx="' + (sx - 5) + '" cy="' + wy + '" r="2.4" fill="#fff" fill-opacity=".8"/><circle id="b2" cx="' + (sx + 6) + '" cy="' + wy + '" r="1.8" fill="#fff" fill-opacity=".8"/>';
+  ok = await runAnim(1300, k => {
+    const r1 = $("#r1"), r2 = $("#r2"), b1 = $("#b1"), b2 = $("#b2"); if (!r1) return;
+    r1.setAttribute("r", 2 + 34 * k); r1.setAttribute("stroke-opacity", 1 - k);
+    r2.setAttribute("r", 2 + 22 * Math.max(0, k - .25)); r2.setAttribute("stroke-opacity", Math.max(0, .9 - k));
+    b1.setAttribute("cy", wy - 26 * k); b1.setAttribute("fill-opacity", .8 * (1 - k));
+    b2.setAttribute("cy", wy - 36 * k); b2.setAttribute("fill-opacity", .8 * (1 - k));
+    setHero(sx + 6, wy + 4 + 26 * k, Math.max(0, 1 - k * 1.1), 0.9 - 0.3 * k);
+  }, tok);
+  if (fx) fx.innerHTML = "";
+  return ok;
+}
+
+function panel(html) { const p = $("#panel"); if (p) p.innerHTML = html; }
+function panelNext(extra) {
+  const n = C.pos + 1, hell = n >= 6;
+  panel((extra || "") +
+    '<div class="info' + (hell ? " hellbox" : "") + '">' + (hell ? "🔥 <b>الجحيم</b> · " : "") + 'الجزيرة التالية: <b>' + n + '</b> · المدة: <b>' + (hell ? "5 دقائق" : "7 دقائق") + '</b><br>' +
+      (hell ? "أسئلة أصعب، وقت أقل لكل سؤال، وعقوبات أقسى." : "15 سؤالاً. أخطر ما فيها الفخ المخفي.") + '<br>' +
+      '<span style="font-size:.82rem;opacity:.85">موقعك: ' + placeName(C.pos) + ' · نقطة الحفظ: ' + placeName(ckOf(C.best_pos)) + '</span></div>' +
+    '<button class="btn go" id="jump">اقفز إلى الجزيرة ' + n + (hell ? " 🔥" : " ⚔️") + '</button>' +
+    '<button class="btn alt" id="hm">الصفحة الرئيسية</button>');
+  $("#jump").onclick = startIsland;
+  $("#hm").onclick = () => flip(() => home());
+}
+function rewardsHTML(res) {
+  let h = "";
+  if (res.discount_code) h += '<div class="info center">🎁 <b>ربحت خصم 10%</b><span class="code">' + esc(res.discount_code) + '</span></div>';
+  if (res.figurine_code) h += '<div class="info center">🏆 <b>وصلت إلى الكنز! ربحت مجسماً مجاناً</b><span class="code">' + esc(res.figurine_code) + '</span>' +
+    '<div class="small">أرسل هذا الكود مع اسم حسابك إلى إنستغرام <b>' + INSTAGRAM + '</b> لاستلام مجسمك.</div></div>';
+  return h;
+}
+
+async function mapScreen(o) {
+  o = o || {};
+  clearInterval(tick); const tok = ++anim_token;
+  const startMark = o.from !== undefined ? o.from : C.pos;
+  show('<h2>🗺 خريطة الكنز</h2>' + mapSVG(startMark) + '<div id="panel"></div>');
+  heroAt(startMark);
+  if (o.jump) {
+    const ok = await doJump(o.from, o.to, tok); if (!ok) return;
+    redraw(o.to); heroAt(o.to);
+    const n = o.res.island;
+    let extra = '<div class="info center">✅ <b>أتممت الجزيرة ' + n + '!</b>' + ((n === 4 || n === 7) ? '<br>🚩 <b>نقطة حفظ</b>: إن غرقت لاحقاً ستعود إلى هنا.' : '') + (n === 5 ? '<br>🔥 الجحيم يبدأ من الجزيرة التالية!' : '') + '</div>' + rewardsHTML(o.res);
+    if (o.res.campaign_won) {
+      panel(extra + '<button class="btn go" id="again">رحلة جديدة 🗺</button><button class="btn alt" id="cp">مشاركة النتيجة</button>');
+      $("#again").onclick = () => flip(() => home());
+      const share = "🏆 وصلت إلى كنز خريطة tokonoma بعد 10 جزر وخمس منها جحيم!\nهل تقدر؟ 👇\n" + SITE;
+      $("#cp").onclick = async () => { try { await navigator.clipboard.writeText(share); $("#cp").textContent = "تم النسخ ✅"; } catch (e) { prompt("انسخ:", share); } };
+    } else panelNext(extra);
+  } else if (o.drown) {
+    const ok = await doDrown(o.from, o.from + 1, tok); if (!ok) return;
+    const np = o.res.pos;
+    redraw(np); setHero(POS[np].x, POS[np].y - 6, 0);
+    await runAnim(700, k => setHero(POS[np].x, POS[np].y - 6 - 14 * (1 - k), k), tok);
+    heroAt(np);
+    panelNext('<div class="info hellbox center">🌊 <b>غرقت!</b> انتهى وقت الجزيرة ' + o.res.island + ' وأنت في المستوى ' + ((o.res.lv || 0) + 1) + '.<br>عدت إلى <b>' + placeName(np) + '</b>' + (np > 0 ? ' (نقطة الحفظ 🚩).' : '.') + '</div>');
+  } else {
+    panelNext(o.note ? '<div class="info center">' + o.note + '</div>' : "");
+  }
+}
+
+/* ============ اللعب داخل الجزيرة ============ */
+async function startIsland() {
+  const b = $("#jump"); if (b) b.disabled = true;
+  try {
+    const res = await rpc("start_island");
+    C.pos = res.pos;
+    G = { st: null, opts: [], dead: [], endAt: 0, totalEnd: 0, busy: false, over: false, shuffled: false, msg: res.resumed ? "↻ استأنفت جزيرتك الجارية" : "", startPos: res.pos };
+    anim_token++;
+    flip(() => { applyState(res.state); drawLevel(); loop(); });
+  } catch (e) { const m = errAr(e); if (b) { b.disabled = false; panel('<div class="err">' + esc(m) + '</div>'); setTimeout(() => panelNext(), 2500); } else home(m); }
+}
+function applyState(st, keepOrder) {
+  G.st = st;
+  if (!keepOrder) { G.opts = st.opts.slice(); G.shuffled = false; }
+  G.dead = st.dead || [];
+  G.endAt = Date.now() + st.left * 1000;
+  G.totalEnd = Date.now() + st.total_left * 1000;
+  G.busy = false;
+}
+function drawLevel() {
+  const st = G.st, lv = st.lv;
+  let dots = ""; for (let i = 0; i < 15; i++) dots += '<i class="' + (i < lv ? "done" : i === lv ? "cur" : "") + '"></i>';
+  const tag = st.pool === 4 ? '<span class="tag">⚔️ معركة</span>' : st.pool === 5 ? '<span class="tag">🔥 سؤال الخبراء</span>' : st.pool === 6 ? '<span class="tag">💀 جحيم</span>' : '';
+  show('<div class="top"><span class="lvl">' + (st.hell ? '🔥 ' : '') + 'الجزيرة ' + st.island + ' · المستوى ' + (lv + 1) + '/15</span><span>وقت الجزيرة <b class="mono" id="gt"></b></span></div>' +
+    '<div class="dots">' + dots + '</div><div class="bar" id="bar"><b></b></div>' + tag +
+    '<div class="q">' + esc(st.q) + '</div><div id="opts"></div><div class="msg" id="msg">' + esc(G.msg) + '</div>', st.hell);
+  G.msg = ""; drawOpts();
+}
+function drawOpts() {
+  $("#opts").innerHTML = G.opts.map((t, i) => '<button class="opt' + (G.dead.includes(t) ? " dead" : "") + '" data-i="' + i + '">' + esc(t) + '</button>').join("");
+  document.querySelectorAll(".opt").forEach(b => b.onclick = () => answer(+b.dataset.i));
+}
+function setMsg(t) { const m = $("#msg"); if (m) m.textContent = t; }
+
+function loop() {
+  clearInterval(tick);
+  tick = setInterval(() => {
+    if (!G || G.over) return;
+    const now = Date.now();
+    const gt = $("#gt"); if (gt) gt.textContent = fmt(Math.max(0, (G.totalEnd - now) / 1000));
+    if (G.busy) return;
+    const left = (G.endAt - now) / 1000, bar = $("#bar");
+    if (bar) { bar.firstChild.style.width = Math.max(0, left / G.st.level_secs * 100) + "%"; bar.classList.toggle("low", left < 6); }
+    if (G.st.lv === G.st.cursed && !G.shuffled && left <= (G.st.hell ? 10 : 8) && left > 0) {
+      G.shuffled = true; G.opts = shuffle(G.opts); drawOpts(); setMsg("👁 الصفحة ملعونة! الخيارات تبدّلت");
+    }
+    if (left <= 0 || G.totalEnd <= now) { G.busy = true; call(() => rpc("time_out", { p_run: G.st.run_id })); }
+  }, 100);
+}
+async function answer(i) {
+  if (!G || G.busy || G.over) return;
+  const t = G.opts[i]; if (G.dead.includes(t)) return;
+  G.busy = true;
+  const btn = document.querySelectorAll(".opt")[i]; if (btn) btn.style.opacity = ".6";
+  call(() => rpc("submit_answer", { p_run: G.st.run_id, p_answer: t }));
+}
+async function call(fn) {
+  let res;
+  try { res = await fn(); }
+  catch (e) {
+    if (e.code === "network") { setMsg(errAr(e)); setTimeout(() => { if (G) G.busy = false; drawOpts(); }, 1200); return; }
+    G.over = true; clearInterval(tick); return home(errAr(e));
+  }
+  handle(res);
+}
+function handle(res) {
+  const s = res.status;
+  if (s === "next") return flip(() => { applyState(res.state); drawLevel(); });
+  if (s === "penalty") { applyState(res.state, true); drawOpts(); return setMsg("خطأ! خسرت " + (G.st.hell ? 15 : 10) + " ثانية"); }
+  if (s === "active") { applyState(res.state, true); drawOpts(); return; }
+  if (s === "fall") {
+    const why = res.reason === "timeout" ? "انتهى وقت المستوى ⏳" : res.reason === "trap" ? "🕳 كان فخاً مخفياً! سقطت 3 مستويات" : "إجابة خاطئة ❌";
+    return flip(() => { applyState(res.state); G.msg = why + (res.back ? " · عدت إلى المستوى " + (res.state.lv + 1) : " · أعد المحاولة"); drawLevel(); });
+  }
+  if (s === "island_cleared") return cleared(res);
+  if (s === "drowned") return drowned(res);
+  G.over = true; clearInterval(tick); home();
+}
+function cleared(res) {
+  G.over = true; clearInterval(tick);
+  const from = G.startPos;
+  C.best_pos = Math.max(C.best_pos, res.island); C.ck = res.ck;
+  if (res.campaign_won) { C = { pos: 10, best_pos: 10, ck: 7, drowns: C.drowns }; }
+  else C.pos = res.pos;
+  const won = res.campaign_won;
+  flip(() => mapScreen({ from, to: res.pos, jump: true, res }).then(() => { if (won) { C = { pos: 0, best_pos: 0, ck: 0, drowns: 0 }; } }));
+}
+function drowned(res) {
+  G.over = true; clearInterval(tick);
+  const from = G.startPos;
+  C.pos = res.pos;
+  flip(() => mapScreen({ from, drown: true, res }));
+}
+
+home();
 </script>
 </body>
 </html>
