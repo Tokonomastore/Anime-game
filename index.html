@@ -4,6 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>tokonoma · خريطة الكنز</title>
+<meta name="description" content="10 جزر و150 سؤال أنمي، خمس منها في الجحيم! تجاوز الجزيرة 5 واربح خصم 10%، وصل للجزيرة 10 واربح مجسماً مجانياً.">
+<meta property="og:title" content="🗺 خريطة الكنز · tokonoma">
+<meta property="og:description" content="10 جزر وأسئلة أنمي، خمس منها في الجحيم! هل تصل إلى المجسم المجاني؟">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#6e1a15">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%236e1a15'/%3E%3Ctext x='50' y='68' text-anchor='middle' font-size='56' fill='%23f2eadb'%3E床%3C/text%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root{--bg:#1b1412;--page:#F2EADB;--page2:#E9DEC8;--ink:#2b2b2b;--gray:#6b6b6b;--red:#C8281E;--green:#2f7d4f;--gold:#c9a24a;--line:#d9cdb6;--cover:#6e1a15;--opt:#fffaf0}
@@ -79,7 +85,7 @@
 <main>
   <div class="brand">TOKONOMA · TREASURE MAP</div>
   <div class="book"><div id="page"></div></div>
-  <footer>من <a href="https://tokonomastore.com" target="_blank" rel="noopener">tokonomastore.com</a></footer>
+  <footer>من <a href="https://tokonomastore.com" target="_blank" rel="noopener">tokonomastore.com</a> · <a href="https://instagram.com/tokonomastore" target="_blank" rel="noopener">@tokonomastore</a></footer>
 </main>
 
 <script>
@@ -168,6 +174,18 @@ function show(html, hell) { const p = $("#page"); p.classList.toggle("hell", !!h
 const REWARD_BOX = '<div class="reward">🎁 <b>تجاوز الجزيرة 5 = خصم 10%</b> على طلبك (مرة كل يوم)<br>🏆 <b>الوصول إلى الجزيرة 10 = مجسم أنمي مجاني!</b>' +
   '<small>خريطة من 10 جزر، في كل جزيرة 15 سؤالاً. الجزر 1–5 مدتها 7 دقائق. ومن الجزيرة 6 يبدأ <b>الجحيم 🔥</b>: أسئلة أصعب و5 دقائق فقط. إن انتهى وقتك تغرق 🌊 وتعود إلى آخر نقطة حفظ (الجزيرة 4 أو 7).</small></div>';
 
+/* ============ المشاركة ============ */
+const GAME_URL = location.origin + location.pathname;
+async function shareText(text, btn) {
+  const old = btn ? btn.textContent : "";
+  try {
+    if (navigator.share) { await navigator.share({ text, url: GAME_URL }); return; }
+  } catch (e) { if (e && e.name === "AbortError") return; }
+  try { await navigator.clipboard.writeText(text + "\n" + GAME_URL); if (btn) { btn.textContent = "تم نسخ الرسالة ✅"; setTimeout(() => btn.textContent = old, 2500); } }
+  catch (e) { prompt("انسخ الرسالة:", text + "\n" + GAME_URL); }
+}
+const SHARE_GAME = "🗺 تحدّي خريطة الكنز من tokonoma: 10 جزر أنمي، خمس منها جحيم 🔥 ومجسم مجاني في النهاية! هل تقدر تصل؟";
+
 /* ============ الصفحة الأولى ============ */
 async function home(msg) {
   clearInterval(tick); G = null; anim_token++;
@@ -196,10 +214,12 @@ function homeOut(msg) {
     '<div class="err" id="err">' + esc(msg || "") + '</div>' +
     '<button class="btn" id="sub">' + (tab === "reg" ? "إنشاء الحساب وفتح الخريطة" : "دخول") + '</button>' +
     '<button class="btn alt" id="lb">🏆 ترتيب الأسبوع</button>' +
+    '<div class="row"><button class="btn alt" id="shg">📣 شارك اللعبة</button><a class="btn alt" href="https://tokonomastore.com" target="_blank" rel="noopener">🛍 المتجر</a></div>' +
     '<div class="small">' + (tab === "reg" ? "اسمك سيظهر في ترتيب الأسبوع. احفظ كلمة مرورك جيداً، لا توجد طريقة لاستعادتها، ولا تستعمل كلمة مرور من حساباتك الأخرى." : "الدخول يحفظ تقدمك وأكوادك على أي هاتف.") + '</div>');
   $("#tl").onclick = () => { tab = "login"; homeOut(); };
   $("#tr").onclick = () => { tab = "reg"; homeOut(); };
   $("#lb").onclick = () => flip(leaderboard);
+  $("#shg").onclick = e => shareText(SHARE_GAME, e.target);
   $("#sub").onclick = submitAuth;
   $("#p").addEventListener("keydown", e => { if (e.key === "Enter") submitAuth(); });
 }
@@ -235,11 +255,13 @@ function homeIn(msg) {
     '<div class="err" id="err">' + esc(msg || "") + '</div>' +
     '<button class="btn go" id="go">🗺 افتح خريطة الكنز</button>' +
     '<div class="row"><button class="btn alt" id="lb">🏆 الترتيب</button><button class="btn alt" id="rules">📜 القواعد</button></div>' +
+    '<div class="row"><button class="btn alt" id="shg">📣 شارك اللعبة</button><a class="btn alt" href="https://tokonomastore.com" target="_blank" rel="noopener">🛍 المتجر</a></div>' +
     (rw ? '<div style="margin-top:12px"><b>أكوادك</b>' + rw + '<div class="small">لاستلام جائزتك أرسل الكود مع اسم حسابك إلى إنستغرام <b>' + INSTAGRAM + '</b>.</div></div>' : '') +
     '<button class="btn alt" id="out" style="margin-top:14px;font-size:.85rem">تسجيل الخروج</button>');
   $("#go").onclick = () => flip(() => mapScreen());
   $("#lb").onclick = () => flip(leaderboard);
   $("#rules").onclick = () => flip(rulesPage);
+  $("#shg").onclick = e => shareText(SHARE_GAME, e.target);
   $("#out").onclick = () => { clearSess(); ME = null; flip(() => homeOut()); };
   document.querySelectorAll("[data-c]").forEach(b => b.onclick = async () => { try { await navigator.clipboard.writeText(b.dataset.c); b.textContent = "تم ✅"; } catch (e) { prompt("انسخ الكود:", b.dataset.c); } });
 }
@@ -396,11 +418,16 @@ async function mapScreen(o) {
     const n = o.res.island;
     let extra = '<div class="info center">✅ <b>أتممت الجزيرة ' + n + '!</b>' + ((n === 4 || n === 7) ? '<br>🚩 <b>نقطة حفظ</b>: إن غرقت لاحقاً ستعود إلى هنا.' : '') + (n === 5 ? '<br>🔥 الجحيم يبدأ من الجزيرة التالية!' : '') + '</div>' + rewardsHTML(o.res);
     if (o.res.campaign_won) {
-      panel(extra + '<button class="btn go" id="again">رحلة جديدة 🗺</button><button class="btn alt" id="cp">مشاركة النتيجة</button>');
+      panel(extra + '<button class="btn go" id="again">رحلة جديدة 🗺</button><button class="btn alt" id="cp">📣 شارك النتيجة</button>');
       $("#again").onclick = () => flip(() => home());
-      const share = "🏆 وصلت إلى كنز خريطة tokonoma بعد 10 جزر وخمس منها جحيم!\nهل تقدر؟ 👇\n" + SITE;
-      $("#cp").onclick = async () => { try { await navigator.clipboard.writeText(share); $("#cp").textContent = "تم النسخ ✅"; } catch (e) { prompt("انسخ:", share); } };
-    } else panelNext(extra);
+      $("#cp").onclick = e => shareText("🏆 وصلت إلى كنز خريطة tokonoma بعد 10 جزر وخمس منها جحيم! هل تقدر؟", e.target);
+    } else {
+      panelNext(extra);
+      const pn = $("#panel");
+      if (pn) { const b = document.createElement("button"); b.className = "btn alt"; b.id = "shp"; b.textContent = "📣 شارك تقدمك";
+        b.onclick = () => shareText("✅ أنهيت الجزيرة " + n + " من 10 في خريطة الكنز" + (n >= 6 ? " وأنا الآن في الجحيم 🔥" : "") + "! هل تتفوق عليّ؟", b);
+        pn.appendChild(b); }
+    }
   } else if (o.drown) {
     const ok = await doDrown(o.from, o.from + 1, tok); if (!ok) return;
     const np = o.res.pos;
