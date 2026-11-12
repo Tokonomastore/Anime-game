@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>tokonoma · لوحة المالك</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#161110;--card:#221a18;--line:#3a2d29;--ink:#f3e9da;--gray:#b5a592;--red:#ff6a3d;--green:#4caf7a;--gold:#c9a24a}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Tajawal',system-ui,sans-serif;padding:16px 14px 50px;display:flex;justify-content:center}
+  main{width:100%;max-width:560px}
+  h1{font-size:1.4rem;margin:6px 0 14px;text-align:center}
+  h2{font-size:1.05rem;margin:22px 0 8px;color:var(--gold)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:8px 0}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 6px;text-align:center}
+  .stat b{display:block;font-size:1.4rem;color:var(--gold);font-family:ui-monospace,Menlo,monospace}
+  .stat span{font-size:.75rem;color:var(--gray)}
+  input{width:100%;padding:12px;margin:5px 0;font:inherit;border:1px solid var(--line);border-radius:10px;background:#120d0c;color:var(--ink);direction:ltr;text-align:left}
+  .btn{display:block;width:100%;padding:12px;border-radius:10px;border:0;background:var(--red);color:#fff;font:inherit;font-weight:700;cursor:pointer;margin-top:8px}
+  .btn.alt{background:transparent;border:1px solid var(--line);color:var(--ink)}
+  .btn.sm{display:inline-block;width:auto;padding:7px 14px;font-size:.85rem;margin:0}
+  .btn.ok{background:var(--green)}
+  .err{color:var(--red);text-align:center;min-height:1.3em;font-size:.9rem;margin-top:6px}
+  .row{display:flex;gap:8px;align-items:center}
+  .row>*{flex:1}
+  .code{font-family:ui-monospace,Menlo,monospace;direction:ltr;display:inline-block;color:var(--gold);font-size:1.05rem;letter-spacing:.05em}
+  .tag{display:inline-block;font-size:.72rem;padding:2px 9px;border-radius:99px;margin-inline-start:4px}
+  .t-fig{background:#6e1a15;color:#ffd9c9}.t-dis{background:#2c3a1f;color:#cfe8b6}
+  .t-bad{background:#7a1f12;color:#ffd0c4}.t-good{background:#1f3b2a;color:#b9ecd0}.t-done{background:#333;color:#aaa}
+  .meta{font-size:.8rem;color:var(--gray);line-height:1.7;margin:6px 0}
+  .tabs{display:flex;gap:6px;margin:10px 0}
+  .tabs button{flex:1;padding:9px;border:1px solid var(--line);background:transparent;color:var(--gray);border-radius:9px;font:inherit;font-weight:700;cursor:pointer}
+  .tabs button.on{background:var(--gold);color:#1b1412;border-color:var(--gold)}
+  table{width:100%;border-collapse:collapse;font-size:.82rem}
+  td,th{padding:6px 4px;border-top:1px solid var(--line);text-align:center}
+  th{color:var(--gray);font-weight:500}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<script>
+const SUPABASE_URL = "https://orixllpvddqfyesvfvzn.supabase.co";
+const SUPABASE_KEY = "sb_publishable_mxfNNEHggVk0q5J-wmgmOA_OMMyIPPA";
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const lsGet = k => { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } };
+const lsSet = (k, v) => { try { v === null ? localStorage.removeItem(k) : localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+const EMAIL = u => u.toLowerCase() + "@tokonoma-players.com";
+let sess = lsGet("toko_admin_sess");
+
+function setSess(j) { sess = { access_token: j.access_token, refresh_token: j.refresh_token, expires_at: j.expires_at || (Math.floor(Date.now() / 1000) + (j.expires_in || 3600)) }; lsSet("toko_admin_sess", sess); }
+function clearSess() { sess = null; lsSet("toko_admin_sess", null); }
+async function getToken() {
+  if (!sess) return null;
+  if (sess.expires_at - Math.floor(Date.now() / 1000) < 60) {
+    try { setSess(await http("/auth/v1/token?grant_type=refresh_token", { body: { refresh_token: sess.refresh_token }, auth: false })); }
+    catch (e) { clearSess(); return null; }
+  }
+  return sess.access_token;
+}
+async function http(path, { body, auth = true } = {}) {
+  const h = { apikey: SUPABASE_KEY, "Content-Type": "application/json" };
+  const tok = auth ? await getToken() : null;
+  if (tok) h.Authorization = "Bearer " + tok;
+  let r;
+  try { r = await fetch(SUPABASE_URL + path, { method: "POST", headers: h, body: JSON.stringify(body || {}) }); }
+  catch (e) { const er = new Error("network"); er.code = "network"; throw er; }
+  let j = null; try { j = await r.json(); } catch (e) {}
+  if (!r.ok) { const er = new Error((j && (j.message || j.msg || j.error_description || j.error)) || "error"); er.code = (j && (j.error_code || j.code)) || ""; throw er; }
+  return j;
+}
+const rpc = (fn, args) => http("/rest/v1/rpc/" + fn, { body: args || {} });
+const errAr = e => {
+  const m = ((e && e.message) || "") + " " + ((e && e.code) || "");
+  if (/network/.test(m)) return "تعذّر الاتصال بالإنترنت";
+  if (/invalid_credentials|invalid login/i.test(m)) return "الاسم أو كلمة المرور غير صحيحة";
+  if (/not_admin/.test(m)) return "هذا الحساب ليس مالكاً";
+  if (/player_not_found/.test(m)) return "لا يوجد لاعب بهذا الاسم";
+  if (/code_not_found/.test(m)) return "لا يوجد كود بهذا الرقم";
+  if (/jwt|not_authenticated/i.test(m)) return "انتهت الجلسة، سجّل الدخول من جديد";
+  return "خطأ: " + ((e && e.message) || "");
+};
+
+const fmtDate = d => { try { return new Date(d).toLocaleString("ar-MA", { timeZone: "Africa/Casablanca", dateStyle: "short", timeStyle: "short" }); } catch (e) { return d; } };
+const fmtSec = s => s == null ? "-" : Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0");
+
+/* ===== شاشة الدخول ===== */
+function login(msg) {
+  $("#app").innerHTML = '<h1>🔐 لوحة المالك</h1><div class="card">' +
+    '<input id="u" placeholder="اسم حسابك في اللعبة" autocapitalize="none" autocomplete="username">' +
+    '<input id="p" type="password" placeholder="كلمة المرور" autocomplete="current-password">' +
+    '<div class="err" id="err">' + esc(msg || "") + '</div><button class="btn" id="go">دخول</button></div>';
+  $("#go").onclick = async () => {
+    const u = $("#u").value.trim(), p = $("#p").value; if (!u || !p) return;
+    $("#go").disabled = true; $("#err").textContent = "";
+    try {
+      setSess(await http("/auth/v1/token?grant_type=password", { body: { email: EMAIL(u), password: p }, auth: false }));
+      await load();
+    } catch (e) { $("#err").textContent = errAr(e); $("#go").disabled = false; }
+  };
+}
+
+/* ===== اللوحة ===== */
+let REW = [], filter = "pending", q = "";
+async function load() {
+  $("#app").innerHTML = '<h1>🔐 لوحة المالك</h1><p class="meta" style="text-align:center">جارٍ التحميل...</p>';
+  try {
+    const [st, rw] = await Promise.all([rpc("admin_stats"), rpc("admin_rewards")]);
+    REW = rw; draw(st);
+  } catch (e) {
+    if (/not_admin/.test(e.message)) { clearSess(); return login(errAr(e)); }
+    if (/jwt|not_authenticated|invalid/i.test(e.message)) { clearSess(); return login(errAr(e)); }
+    $("#app").innerHTML = '<h1>🔐 لوحة المالك</h1><div class="err">' + esc(errAr(e)) + '</div><button class="btn alt" id="rt">إعادة المحاولة</button>';
+    $("#rt").onclick = load;
+  }
+}
+function suspicion(r) {
+  if (!r.answers) return null;
+  const fastRatio = r.fast / r.answers;
+  const bad = (r.avg_ms != null && r.avg_ms < 3000) || fastRatio > 0.3;
+  return bad;
+}
+function rewardCard(r) {
+  const s = suspicion(r), kind = r.kind === "figurine";
+  return '<div class="card"><div class="row" style="justify-content:space-between"><span class="code">' + esc(r.code) + '</span>' +
+    '<span style="flex:0 0 auto"><span class="tag ' + (kind ? "t-fig" : "t-dis") + '">' + (kind ? "🏆 مجسم" : "🎁 خصم 10%") + '</span>' +
+    (r.claimed ? '<span class="tag t-done">سُلّمت ✅</span>' : '') + '</span></div>' +
+    '<div class="meta">اللاعب: <b>' + esc(r.username) + '</b> · ' + esc(fmtDate(r.created_at)) + '<br>' +
+    'إجابات: ' + r.answers + ' · أخطاء: ' + r.wrong + ' · متوسط زمن الإجابة: ' + (r.avg_ms == null ? "-" : (r.avg_ms / 1000).toFixed(1) + " ث") + ' · إجابات صحيحة سريعة (أقل من 1.5 ث): ' + r.fast +
+    '<br>' + (s === null ? "" : s ? '<span class="tag t-bad">⚠️ مشبوه: أسرع من المعتاد، راجع قبل التسليم</span>' : '<span class="tag t-good">سرعة طبيعية</span>') + '</div>' +
+    '<div class="row"><button class="btn sm ' + (r.claimed ? "alt" : "ok") + '" data-claim="' + esc(r.code) + '" data-v="' + (r.claimed ? "0" : "1") + '">' + (r.claimed ? "إلغاء التسليم" : "تأكيد التسليم") + '</button>' +
+    '<button class="btn sm alt" data-player="' + esc(r.username) + '">ملف اللاعب</button></div></div>';
+}
+function draw(st) {
+  const ri = st.reached_island || {};
+  const list = REW.filter(r => (filter === "all" || (filter === "pending" ? !r.claimed : filter === "figurine" ? r.kind === "figurine" : r.claimed)) &&
+    (!q || (r.code + " " + r.username).toLowerCase().includes(q.toLowerCase())));
+  $("#app").innerHTML = '<h1>🔐 لوحة المالك</h1>' +
+    '<div class="grid">' +
+    [["players", "لاعب"], ["new_today", "جدد اليوم"], ["runs", "محاولة"], ["cleared", "جزيرة أُنجزت"], ["drowned", "غرق"], ["pending", "جوائز بانتظارك"]].map(x => '<div class="stat"><b>' + (st[x[0]] || 0) + '</b><span>' + x[1] + '</span></div>').join("") + '</div>' +
+    '<div class="card meta">🎁 كودات الخصم: <b>' + st.discounts + '</b> · 🏆 المجسمات: <b>' + st.figurines + '</b><br>وصل إلى كل جزيرة (لاعبون): ' +
+      (Object.keys(ri).sort((a, b) => a - b).map(k => 'ج' + k + ': ' + ri[k]).join(" · ") || "لا أحد بعد") + '</div>' +
+    '<h2>الجوائز</h2><input id="q" placeholder="ابحث بالكود أو باسم اللاعب" value="' + esc(q) + '" autocapitalize="none">' +
+    '<div class="tabs">' + [["pending", "بانتظار التسليم"], ["figurine", "المجسمات"], ["done", "سُلّمت"], ["all", "الكل"]].map(t => '<button data-f="' + t[0] + '" class="' + (filter === t[0] ? "on" : "") + '">' + t[1] + '</button>').join("") + '</div>' +
+    '<div id="list">' + (list.length ? list.map(rewardCard).join("") : '<div class="card meta" style="text-align:center">لا توجد جوائز هنا</div>') + '</div>' +
+    '<h2>البحث عن لاعب</h2><div class="row"><input id="pn" placeholder="اسم اللاعب"><button class="btn sm" id="pg" style="flex:0 0 auto">بحث</button></div><div id="pbox"></div>' +
+    '<button class="btn alt" id="rf" style="margin-top:20px">🔄 تحديث</button><button class="btn alt" id="lo">تسجيل الخروج</button>';
+  $("#q").oninput = e => { q = e.target.value; draw(st); const i = $("#q"); i.focus(); i.setSelectionRange(q.length, q.length); };
+  document.querySelectorAll("[data-f]").forEach(b => b.onclick = () => { filter = b.dataset.f; draw(st); });
+  document.querySelectorAll("[data-claim]").forEach(b => b.onclick = async () => {
+    const code = b.dataset.claim, v = b.dataset.v === "1";
+    if (!confirm((v ? "تأكيد تسليم الجائزة " : "إلغاء تسليم الجائزة ") + code + "؟")) return;
+    b.disabled = true;
+    try { await rpc("admin_claim", { p_code: code, p_claimed: v }); await load(); } catch (e) { alert(errAr(e)); b.disabled = false; }
+  });
+  document.querySelectorAll("[data-player]").forEach(b => b.onclick = () => player(b.dataset.player));
+  $("#pg").onclick = () => { const n = $("#pn").value.trim(); if (n) player(n); };
+  $("#rf").onclick = load;
+  $("#lo").onclick = () => { clearSess(); login(); };
+}
+async function player(name) {
+  const box = $("#pbox"); box.innerHTML = '<p class="meta">جارٍ التحميل...</p>';
+  try {
+    const p = await rpc("admin_player", { p_username: name });
+    box.innerHTML = '<div class="card"><b>' + esc(p.username) + '</b><div class="meta">انضم: ' + esc(fmtDate(p.joined)) + '</div>' +
+      '<table><tr><th>جزيرة</th><th>النتيجة</th><th>المدة</th><th>سقطات</th><th>إجابات</th><th>متوسط (ث)</th></tr>' +
+      (p.runs.length ? p.runs.map(r => '<tr><td>' + r.island + '</td><td>' + (r.status === "won" ? "✅" : r.status === "lost" ? "🌊" : "⏳") + '</td><td>' + fmtSec(r.duration_s) + '</td><td>' + r.falls + '</td><td>' + r.answers + '</td><td>' + (r.avg_ms == null ? "-" : (r.avg_ms / 1000).toFixed(1)) + '</td></tr>').join("") : '<tr><td colspan="6">لا محاولات</td></tr>') +
+      '</table>' + (p.rewards.length ? '<div class="meta">الأكواد: ' + p.rewards.map(r => '<span class="code">' + esc(r.code) + '</span>' + (r.claimed ? "✅" : "")).join(" · ") + '</div>' : '') + '</div>';
+  } catch (e) { box.innerHTML = '<div class="err">' + esc(errAr(e)) + '</div>'; }
+}
+
+sess ? load() : login();
+</script>
+</body>
+</html>
