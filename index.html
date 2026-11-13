@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>tokonoma · خريطة الكنز</title>
-<meta name="description" content="10 جزر و150 سؤال أنمي، خمس منها في الجحيم! تجاوز الجزيرة 5 واربح خصم 10%، وصل للجزيرة 10 واربح مجسماً مجانياً.">
+<meta name="description" content="10 جزر و160 سؤال أنمي، خمس منها في الجحيم! تجاوز الجزيرة 5 واربح خصم 10%، وصل للجزيرة 10 واربح مجسماً مجانياً.">
 <meta property="og:title" content="🗺 خريطة الكنز · tokonoma">
 <meta property="og:description" content="10 جزر وأسئلة أنمي، خمس منها في الجحيم! هل تصل إلى المجسم المجاني؟">
 <meta property="og:type" content="website">
@@ -71,6 +71,7 @@
   .lb td:first-child{width:34px;text-align:center}
   .lb td:last-child{text-align:left;direction:ltr;font-family:ui-monospace,Menlo,monospace;color:var(--red)}
   .center{text-align:center}
+  /* الخريطة */
   #map{width:100%;height:auto;display:block;border-radius:14px;border:1.5px solid var(--line);margin:6px 0 4px}
   .pulse{animation:pulse 1.6s ease-in-out infinite}
   @keyframes pulse{50%{opacity:.3}}
@@ -79,6 +80,54 @@
   .info b{color:#C8281E}.info.hellbox b{color:#ff9a6d}
   footer{text-align:center;margin-top:14px;font-size:.82rem;color:#b9a98f}
   footer a{color:var(--gold);text-decoration:none;font-weight:700}
+
+  /* ===== المؤثرات والأجواء ===== */
+  main{position:relative;z-index:1}
+  #bg{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+  #conf{position:fixed;inset:0;width:100%;height:100%;z-index:60;pointer-events:none}
+  #fxo{position:fixed;inset:0;z-index:50;pointer-events:none;opacity:0}
+  #fxo.f-good{animation:fl .6s ease-out;background:radial-gradient(circle,#3ddc7a66,#0000 70%)}
+  #fxo.f-bad{animation:fl .7s ease-out;background:radial-gradient(circle,#0000 30%,#ff1e1e88)}
+  #fxo.f-water{animation:fl 1.7s ease-out;background:linear-gradient(#2a7fbf99,#0b3b6aaa)}
+  #fxo.f-dark{animation:fl .9s ease-out;background:radial-gradient(circle,#0000 20%,#000d)}
+  #fxo.f-light{animation:fl .35s ease-out;background:#fff9}
+  @keyframes fl{0%{opacity:0}15%{opacity:1}100%{opacity:0}}
+  #vig{position:fixed;inset:0;z-index:49;pointer-events:none}
+  #vig.on{animation:vg 1s ease-in-out infinite}
+  @keyframes vg{0%,100%{box-shadow:inset 0 0 60px 0 #ff1e1e22}50%{box-shadow:inset 0 0 120px 18px #ff1e1e99}}
+  .book.shake{animation:shake .5s}
+  @keyframes shake{10%,50%,90%{transform:translateX(-7px)}30%,70%{transform:translateX(7px)}}
+  .opt{transition:background .2s,border-color .2s,transform .15s}
+  .opt:active{transform:scale(.98)}
+  .opt.ok{background:var(--green);border-color:var(--green);color:#fff;animation:pop .35s}
+  @keyframes pop{50%{transform:scale(1.04)}}
+  #banner{position:fixed;left:0;right:0;top:32%;text-align:center;z-index:55;pointer-events:none;font-family:'Amiri',serif;color:#fff;text-shadow:0 4px 24px #000c,0 0 30px var(--bc,#c9a24a);animation:bn 1.9s ease both}
+  #banner b{display:block;font-size:2.8rem;line-height:1.3}
+  #banner span{font-size:1.1rem}
+  @keyframes bn{0%{opacity:0;transform:scale(1.6)}15%{opacity:1;transform:scale(1)}75%{opacity:1}100%{opacity:0;transform:scale(.95) translateY(-10px)}}
+  #toast{position:fixed;top:16px;left:50%;z-index:55;background:#c9a24a;color:#2b1a05;font-weight:700;padding:8px 18px;border-radius:99px;box-shadow:0 6px 20px #0008;animation:ts 1.7s ease both;pointer-events:none;white-space:nowrap}
+  @keyframes ts{0%{opacity:0;transform:translate(-50%,-20px)}12%,80%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,-10px)}}
+  #snd{position:fixed;top:10px;left:10px;z-index:56;width:40px;height:40px;border-radius:50%;border:1.5px solid #c9a24a88;background:#1b1412cc;color:#f2eadb;font-size:1.1rem;cursor:pointer;padding:0}
+  .sigil{animation:flt 4.5s ease-in-out infinite}
+  @keyframes flt{50%{transform:translateY(-5px) rotate(3deg)}}
+  .btn.go{position:relative;overflow:hidden}
+  .btn.go::after{content:"";position:absolute;top:0;bottom:0;width:40%;left:-60%;background:linear-gradient(100deg,#0000,#fff4,#0000);animation:shn 3.2s ease-in-out infinite}
+  @keyframes shn{60%,100%{left:130%}}
+  .wv{animation:wv 3.2s ease-in-out infinite alternate}
+  @keyframes wv{from{transform:translateX(-5px);opacity:.3}to{transform:translateX(5px);opacity:.75}}
+  .ember{animation:em 3.4s ease-in infinite}
+  @keyframes em{0%{transform:translateY(8px);opacity:0}30%{opacity:1}100%{transform:translateY(-34px);opacity:0}}
+  .cl{animation:cl 46s linear infinite;opacity:.35}
+  @keyframes cl{from{transform:translateX(-90px)}to{transform:translateX(430px)}}
+  .bob{animation:bob 1.6s ease-in-out infinite}
+  @keyframes bob{50%{transform:translateY(-2.5px)}}
+  .ring{animation:rg 1.8s ease-out infinite;transform-box:fill-box;transform-origin:center}
+  @keyframes rg{from{transform:scale(.6);opacity:.9}to{transform:scale(1.9);opacity:0}}
+  .pf{animation:pf .8s ease-out forwards;transform-box:fill-box;transform-origin:center}
+  @keyframes pf{to{transform:translate(var(--dx),var(--dy)) scale(.3);opacity:0}}
+  .bar.low{animation:lowb .45s ease-in-out infinite alternate}
+  @keyframes lowb{to{filter:brightness(1.7)}}
+  @media (prefers-reduced-motion:reduce){.sigil,.wv,.ember,.cl,.bob,.btn.go::after{animation:none}.book.shake{animation:none}}
 </style>
 </head>
 <body>
@@ -89,7 +138,7 @@
 </main>
 
 <script>
-/* ============ الإعدادات ============ */
+/* ============ الإعدادات: ضع هنا بيانات مشروعك في Supabase ============ */
 const SUPABASE_URL = "https://orixllpvddqfyesvfvzn.supabase.co";
 const SUPABASE_KEY = "sb_publishable_mxfNNEHggVk0q5J-wmgmOA_OMMyIPPA";
 
@@ -107,9 +156,205 @@ const lsGet = k => { try { return JSON.parse(localStorage.getItem(k)); } catch (
 const lsSet = (k, v) => { try { v === null ? localStorage.removeItem(k) : localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
 const ckOf = b => b >= 7 ? 7 : b >= 4 ? 4 : 0;
 const placeName = p => p === 0 ? "الشاطئ" : "الجزيرة " + p;
+/* =====================================================================
+   المؤثرات: صوت (مولَّد بالكود) + اهتزاز + جزيئات + وميض
+   ===================================================================== */
+const REDUCE = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const rnd = (a, b) => a + Math.random() * (b - a);
 
+const SFX = (() => {
+  let ctx = null, master = null, muted = lsGet("toko_mute") === true, mood = "home", nbuf = null, seaG = null, droneG = null;
+  const SCALE = [220, 246.94, 261.63, 329.63, 349.23];           // سلّم ياباني (هيراجوشي)
+  const HSCALE = [110, 123.47, 130.81, 164.81, 174.61];
+  const ready = () => ctx && !muted && ctx.state === "running";
+
+  function silentKick() {        // يجعل الصوت يعمل حتى لو كان الهاتف على الصامت (آيفون)
+    try {
+      const n = 8000, b = new Uint8Array(44 + n), dv = new DataView(b.buffer);
+      const w = (o, t) => [...t].forEach((c, i) => b[o + i] = c.charCodeAt(0));
+      w(0, "RIFF"); dv.setUint32(4, 36 + n, true); w(8, "WAVEfmt "); dv.setUint32(16, 16, true); dv.setUint16(20, 1, true); dv.setUint16(22, 1, true);
+      dv.setUint32(24, 8000, true); dv.setUint32(28, 8000, true); dv.setUint16(32, 1, true); dv.setUint16(34, 8, true); w(36, "data"); dv.setUint32(40, n, true);
+      b.fill(128, 44);
+      const a = new Audio(URL.createObjectURL(new Blob([b], { type: "audio/wav" }))); a.loop = true; a.volume = .02; a.play().catch(() => {});
+    } catch (e) {}
+  }
+  function init() {
+    if (!ctx) {
+      try { ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { ctx = null; return false; }
+      master = ctx.createGain(); master.gain.value = muted ? 0 : .85; master.connect(ctx.destination);
+      const len = ctx.sampleRate * 2; nbuf = ctx.createBuffer(1, len, ctx.sampleRate);
+      const d = nbuf.getChannelData(0); for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+      silentKick(); ambience();
+    }
+    if (ctx.state === "suspended") ctx.resume();
+    return true;
+  }
+  function ambience() {
+    const s = ctx.createBufferSource(); s.buffer = nbuf; s.loop = true;
+    const f = ctx.createBiquadFilter(); f.type = "lowpass"; f.frequency.value = 520;
+    seaG = ctx.createGain(); seaG.gain.value = 0;
+    const lfo = ctx.createOscillator(), lg = ctx.createGain(); lfo.frequency.value = .11; lg.gain.value = 180; lfo.connect(lg); lg.connect(f.frequency); lfo.start();
+    s.connect(f); f.connect(seaG); seaG.connect(master); s.start();
+    droneG = ctx.createGain(); droneG.gain.value = 0;
+    const lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 180;
+    [55, 55.7, 82.4].forEach(fr => { const o = ctx.createOscillator(); o.type = "sawtooth"; o.frequency.value = fr; o.connect(lp); o.start(); });
+    lp.connect(droneG); droneG.connect(master);
+    setInterval(music, 520); applyMood();
+  }
+  function applyMood() {
+    if (!ctx) return; const t = ctx.currentTime;
+    const g = { home: [.04, 0], sea: [.13, 0], play: [.02, 0], hell: [0, .06], hellsea: [.08, .05] }[mood] || [0, 0];
+    seaG.gain.setTargetAtTime(g[0], t, .6); droneG.gain.setTargetAtTime(g[1], t, .8);
+  }
+  function music() {
+    if (!ready() || document.hidden) return;
+    const hell = mood === "hell" || mood === "hellsea";
+    if (Math.random() > (hell ? .3 : .45)) return;
+    const sc = hell ? HSCALE : SCALE;
+    let f = sc[Math.floor(Math.random() * sc.length)] * (Math.random() < .4 ? 2 : 1);
+    if (!hell && Math.random() < .2) f *= 2;
+    pluck(f, (hell ? .05 : .07) * (mood === "play" ? .6 : 1), hell ? 1.7 : 1.1);
+  }
+  function pluck(f, v, d) { tone(f, d, { type: "triangle", v, fast: 1 }); tone(f * 2, d * .5, { type: "sine", v: v * .3, fast: 1 }); }
+  function tone(f, d, o) {
+    if (!ready()) return; o = o || {};
+    const t = ctx.currentTime + (o.at || 0), os = ctx.createOscillator(), g = ctx.createGain();
+    os.type = o.type || "sine"; os.frequency.setValueAtTime(f, t); if (o.to) os.frequency.exponentialRampToValueAtTime(o.to, t + d);
+    const v = o.v || .2; g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(v, t + (o.fast ? .006 : .012)); g.gain.exponentialRampToValueAtTime(.0001, t + d);
+    os.connect(g); g.connect(master); os.start(t); os.stop(t + d + .05);
+  }
+  function noise(d, o) {
+    if (!ready()) return; o = o || {};
+    const t = ctx.currentTime + (o.at || 0), s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+    s.buffer = nbuf; f.type = o.type || "bandpass"; f.frequency.setValueAtTime(o.f || 1000, t); if (o.to) f.frequency.exponentialRampToValueAtTime(o.to, t + d); f.Q.value = o.q || 1;
+    const v = o.v || .2; g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(v, t + (o.att || .02)); g.gain.exponentialRampToValueAtTime(.0001, t + d);
+    s.connect(f); f.connect(g); g.connect(master); s.start(t, Math.random() * 1.5); s.stop(t + d + .05);
+  }
+  const NOTE = n => 261.63 * Math.pow(2, n / 12);
+  return {
+    init, muted: () => muted,
+    toggle() { muted = !muted; lsSet("toko_mute", muted); if (ctx) master.gain.setTargetAtTime(muted ? 0 : .85, ctx.currentTime, .05); return muted; },
+    mood(m) { mood = m; applyMood(); },
+    click() { tone(900, .05, { type: "triangle", v: .08, fast: 1 }); },
+    flip() { noise(.28, { f: 1800, to: 500, q: .8, v: .1, att: .05 }); },
+    good(n) { const k = Math.min(n || 1, 8) - 1; [0, 4, 7].forEach((st, i) => tone(NOTE(st + k), .35, { type: "triangle", v: .16, at: i * .07 })); tone(NOTE(12 + k), .5, { v: .08, at: .2 }); },
+    bad() { tone(170, .4, { type: "sawtooth", to: 70, v: .18 }); noise(.25, { type: "lowpass", f: 600, v: .12 }); },
+    fall() { tone(420, .7, { type: "sawtooth", to: 55, v: .16 }); noise(.5, { type: "lowpass", f: 900, to: 150, v: .14 }); },
+    trap() { tone(70, .9, { type: "sine", to: 35, v: .5 }); tone(95, .6, { type: "sawtooth", to: 40, v: .12 }); noise(.7, { type: "lowpass", f: 400, to: 80, v: .25 }); },
+    tick(urgent) { tone(urgent ? 1250 : 980, .05, { type: "square", v: .05, fast: 1 }); if (urgent) tone(70, .12, { v: .3 }); },
+    whoosh() { noise(.55, { f: 300, to: 3200, q: 1.5, v: .16, att: .25 }); },
+    land() { tone(130, .3, { to: 45, v: .4 }); noise(.25, { type: "lowpass", f: 700, v: .15 }); },
+    splash() { noise(.9, { type: "lowpass", f: 3000, to: 250, v: .3, att: .03 }); for (let i = 0; i < 6; i++) tone(500 + i * 130, .12, { v: .06, at: .12 + i * .09 }); tone(90, .6, { to: 40, v: .3 }); },
+    respawn() { [0, 7, 12].forEach((st, i) => tone(NOTE(st), .4, { type: "triangle", v: .1, at: i * .1 })); },
+    clear() { [0, 4, 7, 12].forEach((st, i) => tone(NOTE(st), .5, { type: "triangle", v: .17, at: i * .11 })); [7, 11, 14, 19].forEach((st, i) => tone(NOTE(st), .9, { v: .1, at: .5 + i * .06 })); },
+    win() { [0, 4, 7, 12, 16, 19, 24].forEach((st, i) => tone(NOTE(st), .6, { type: "triangle", v: .17, at: i * .12 })); [12, 16, 19, 24].forEach(st => tone(NOTE(st), 1.6, { v: .1, at: .95 })); noise(1.2, { f: 6000, to: 9000, q: 3, v: .05, at: .9 }); },
+    gong(hell) { const b = hell ? 62 : 98; [1, 2.01, 2.76, 4.1].forEach((m, i) => tone(b * m, 2.2 - i * .3, { v: .22 / (i + 1) })); noise(.5, { type: "lowpass", f: 500, v: hell ? .18 : .06 }); },
+    curse() { tone(220, 1, { type: "sawtooth", v: .07 }); tone(311, 1, { type: "sawtooth", v: .07 }); tone(1800, .6, { to: 300, v: .04 }); },
+    thunder() { noise(1.8, { type: "lowpass", f: 500, to: 60, v: .35, att: .15, at: .15 }); },
+  };
+})();
+
+const HAP = (() => {
+  const l = document.createElement("label");
+  l.style.cssText = "position:fixed;left:-50px;top:0;opacity:0;pointer-events:none";
+  l.innerHTML = '<input type="checkbox" switch>'; document.addEventListener("DOMContentLoaded", () => document.body.appendChild(l));
+  return {
+    v(p) { try { if (!SFX.muted() && navigator.vibrate) navigator.vibrate(p); } catch (e) {} },
+    tap() { try { if (SFX.muted()) return; if (navigator.vibrate) navigator.vibrate(8); else l.click(); } catch (e) {} },
+  };
+})();
+
+const FX = (() => {
+  const mk = (tag, id) => { const e = document.createElement(tag); if (id) e.id = id; return e; };
+  const fl = mk("div", "fxo"), vig = mk("div", "vig"), bg = mk("canvas", "bg"), cv = mk("canvas", "conf");
+  document.addEventListener("DOMContentLoaded", () => { document.body.prepend(bg); document.body.append(fl, vig, cv, sndBtn()); resize(); });
+  function sndBtn() {
+    const b = mk("button", "snd"); b.setAttribute("aria-label", "الصوت");
+    const up = () => b.textContent = SFX.muted() ? "🔇" : "🔊"; up();
+    b.onclick = () => { SFX.init(); SFX.toggle(); up(); if (!SFX.muted()) SFX.click(); };
+    return b;
+  }
+  let W = 0, H = 0, D = 1;
+  function resize() {
+    D = Math.min(devicePixelRatio || 1, 2); W = innerWidth; H = innerHeight;
+    [bg, cv].forEach(c => { c.width = W * D; c.height = H * D; c.getContext("2d").setTransform(D, 0, 0, D, 0, 0); });
+  }
+  addEventListener("resize", resize);
+
+  /* جزيئات الخلفية: بتلات ساكورا أو جمر الجحيم */
+  let P = [], pm = null;
+  const spawn = (hell, init) => hell
+    ? { x: rnd(0, W), y: init ? rnd(0, H) : H + 10, vx: rnd(-.25, .25), vy: -rnd(.4, 1.4), r: rnd(1, 2.8), ph: rnd(0, 6.28), h: 1 }
+    : { x: rnd(0, W), y: init ? rnd(0, H) : -10, vx: -rnd(.1, .6), vy: rnd(.4, 1.1), r: rnd(3, 6), ph: rnd(0, 6.28), rot: rnd(0, 6.28), vr: rnd(-.04, .04) };
+  function bgFrame() {
+    if (!document.hidden && W) {
+      const pg = document.getElementById("page"), hell = !!(pg && pg.classList.contains("hell"));
+      if (pm !== hell) { pm = hell; P = []; for (let i = 0; i < (hell ? 34 : 22); i++) P.push(spawn(hell, true)); }
+      const x = bg.getContext("2d"); x.clearRect(0, 0, W, H);
+      for (let i = 0; i < P.length; i++) {
+        const p = P[i]; p.ph += .03;
+        p.x += p.vx + Math.sin(p.ph) * (hell ? .3 : .5); p.y += p.vy;
+        if (hell) {
+          x.fillStyle = "rgba(255," + Math.floor(90 + 80 * Math.abs(Math.sin(p.ph))) + ",40," + (.35 + .4 * Math.abs(Math.sin(p.ph * 1.3))) + ")";
+          x.beginPath(); x.arc(p.x, p.y, p.r, 0, 6.3); x.fill();
+          if (p.y < -10) P[i] = spawn(true, false);
+        } else {
+          p.rot += p.vr; x.save(); x.translate(p.x, p.y); x.rotate(p.rot); x.fillStyle = "rgba(255,183,197,.5)";
+          x.beginPath(); x.ellipse(0, 0, p.r, p.r * .55, 0, 0, 6.3); x.fill(); x.restore();
+          if (p.y > H + 10 || p.x < -10) P[i] = spawn(false, false);
+        }
+      }
+    }
+    requestAnimationFrame(bgFrame);
+  }
+  if (!REDUCE) requestAnimationFrame(bgFrame);
+
+  /* قصاصات الاحتفال */
+  let C = [], craf = 0;
+  const COL = ["#c9a24a", "#ff6a3d", "#f2eadb", "#2f7d4f", "#ff9ec0", "#5fb3ff"];
+  function confetti(n, gold) {
+    if (REDUCE) return;
+    for (let i = 0; i < n; i++) C.push({ x: W / 2 + rnd(-50, 50), y: H * .55, vx: rnd(-7, 7), vy: rnd(-16, -5), g: .34, w: rnd(5, 10), h: rnd(3, 6), rot: rnd(0, 6.28), vr: rnd(-.3, .3), c: gold ? (Math.random() < .6 ? "#c9a24a" : COL[i % 6]) : COL[i % 6], life: 1 });
+    if (!craf) craf = requestAnimationFrame(cFrame);
+  }
+  function cFrame() {
+    const x = cv.getContext("2d"); x.clearRect(0, 0, W, H);
+    C = C.filter(p => p.life > 0 && p.y < H + 20);
+    C.forEach(p => { p.vy += p.g; p.vx *= .99; p.x += p.vx; p.y += p.vy; p.rot += p.vr; p.life -= .004;
+      x.save(); x.translate(p.x, p.y); x.rotate(p.rot); x.globalAlpha = Math.max(0, Math.min(1, p.life * 2)); x.fillStyle = p.c; x.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); x.restore(); });
+    craf = C.length ? requestAnimationFrame(cFrame) : 0; if (!craf) x.clearRect(0, 0, W, H);
+  }
+
+  return {
+    flash(c) { if (REDUCE && c === "light") return; fl.className = ""; void fl.offsetWidth; fl.className = "f-" + c; },
+    shake() { const b = $(".book"); if (!b || REDUCE) return; b.classList.remove("shake"); void b.offsetWidth; b.classList.add("shake"); },
+    urgent(on) { vig.classList.toggle("on", !!on && !REDUCE); },
+    confetti,
+    toast(t) { const o = $("#toast"); if (o) o.remove(); const e = mk("div", "toast"); e.textContent = t; document.body.appendChild(e); setTimeout(() => e.remove(), 1800); },
+    banner(t, sub, hell) {
+      const o = $("#banner"); if (o) o.remove(); const e = mk("div", "banner"); e.style.setProperty("--bc", hell ? "#ff6a3d" : "#c9a24a");
+      e.innerHTML = "<b>" + esc(t) + "</b><span>" + esc(sub) + "</span>"; document.body.appendChild(e); setTimeout(() => e.remove(), 1950);
+    },
+    puff(x, y, col) {                   // غبار/رذاذ داخل الخريطة (SVG)
+      const g = $("#fx"); if (!g) return;
+      for (let i = 0; i < 8; i++) {
+        const c = document.createElementNS("http://www.w3.org/2000/svg", "circle"), a = rnd(0, 6.28), d = rnd(10, 26);
+        c.setAttribute("cx", x); c.setAttribute("cy", y); c.setAttribute("r", rnd(1.5, 3.4)); c.setAttribute("fill", col || "#f2eadb"); c.setAttribute("class", "pf");
+        c.style.setProperty("--dx", (Math.cos(a) * d).toFixed(1) + "px"); c.style.setProperty("--dy", (Math.sin(a) * d * .6 - 8).toFixed(1) + "px");
+        g.appendChild(c); setTimeout(() => c.remove(), 900);
+      }
+    },
+  };
+})();
+
+/* أول لمسة تفعّل الصوت (شرط المتصفحات) + صوت الأزرار */
+["click", "touchend"].forEach(ev => document.addEventListener(ev, e => {
+  SFX.init();
+  if (ev === "click" && e.target.closest && e.target.closest(".btn,.opt,.tabs button")) { SFX.click(); HAP.tap(); }
+}, true));
+document.addEventListener("visibilitychange", () => { if (!document.hidden) SFX.init(); });
 /* ============ الاتصال بالخادم (Supabase) ============ */
-const EMAIL = u => u.toLowerCase() + "@tokonoma-players.com";
+const EMAIL = u => u.toLowerCase() + "@tokonoma-players.com";   // بريد وهمي داخلي: اللاعب لا يراه
 let sess = lsGet("toko_sess");
 
 function setSess(j) {
@@ -166,10 +411,15 @@ function errAr(e) {
 let ME = null, C = { pos: 0, best_pos: 0, ck: 0, drowns: 0 }, G = null, tick = null, anim_token = 0;
 
 function flip(fn) {
+  SFX.flip();
   const p = $("#page"); p.classList.add("out");
   setTimeout(() => { fn(); p.classList.remove("out"); p.classList.add("in"); setTimeout(() => p.classList.remove("in"), 460); }, 420);
 }
-function show(html, hell) { const p = $("#page"); p.classList.toggle("hell", !!hell); p.innerHTML = html; }
+function show(html, hell) {
+  const p = $("#page"); p.classList.toggle("hell", !!hell); p.innerHTML = html;
+  SFX.mood(hell ? "hell" : (G && !G.over ? "play" : "home"));
+  if (!G || G.over) FX.urgent(false);
+}
 
 const REWARD_BOX = '<div class="reward">🎁 <b>تجاوز الجزيرة 5 = خصم 10%</b> على طلبك (مرة كل يوم)<br>🏆 <b>الوصول إلى الجزيرة 10 = مجسم أنمي مجاني!</b>' +
   '<small>خريطة من 10 جزر، في كل جزيرة 15 سؤالاً. الجزر 1–5 مدتها 7 دقائق. ومن الجزيرة 6 يبدأ <b>الجحيم 🔥</b>: أسئلة أصعب و5 دقائق فقط. إن انتهى وقتك تغرق 🌊 وتعود إلى آخر نقطة حفظ (الجزيرة 4 أو 7).</small></div>';
@@ -249,6 +499,7 @@ function homeIn(msg) {
   const rw = (ME.rewards || []).map(r =>
     '<div class="rw"><div><span class="mono">' + esc(r.code) + '</span><div class="st">' + (r.kind === "figurine" ? "🏆 مجسم مجاني" : "🎁 خصم 10%") + ' · ' + (r.claimed ? "✅ تم تسليمها" : "⏳ لم تُستلم بعد") + '</div></div>' +
     '<button class="btn alt" style="width:auto;margin:0;padding:7px 12px;font-size:.8rem" data-c="' + esc(r.code) + '">نسخ</button></div>').join("");
+  const next = C.pos + 1;
   show(SIGIL + '<h2>أهلاً <span class="mono">' + esc(ME.username) + '</span></h2>' + REWARD_BOX +
     '<div class="stats"><span><b>' + C.pos + '</b>موقعك (جزيرة)</span><span><b>' + ME.islands_cleared + '</b>جزر أُنجزت</span><span><b>' + ME.campaigns_won + '</b>مجسمات 🏆</span></div>' +
     '<div class="small" style="margin:0">أنت الآن على: <b>' + placeName(C.pos) + '</b> · نقطة الحفظ: <b>' + placeName(ckOf(C.best_pos)) + '</b></div>' +
@@ -294,28 +545,36 @@ async function leaderboard() {
   } catch (e) { show('<h2>🏆 ترتيب الأسبوع</h2><p class="sub">' + esc(errAr(e)) + '</p><button class="btn" id="bk">رجوع</button>'); }
   $("#bk").onclick = () => flip(() => home());
 }
-
-/* ============ خريطة الكنز ============ */
+/* =====================================================================
+   خريطة الكنز
+   ===================================================================== */
 const POS = [ {x:180,y:548},
   {x:92,y:484},{x:258,y:436},{x:100,y:388},{x:260,y:340},{x:96,y:292},
   {x:256,y:244},{x:100,y:196},{x:252,y:148},{x:112,y:100},{x:236,y:52} ];
 
-function mapSVG(mark) {
+function mapSVG(mark) {          // mark = موضع الشخصية (يحدد الجسور المقطوعة)
   let s = '<svg id="map" viewBox="0 0 360 596" xmlns="http://www.w3.org/2000/svg">' +
     '<defs><linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">' +
     '<stop offset="0" stop-color="#2a0f0c"/><stop offset=".40" stop-color="#5b241b"/><stop offset=".47" stop-color="#9fc4c1"/><stop offset="1" stop-color="#d7e7e1"/></linearGradient></defs>' +
     '<rect width="360" height="596" rx="14" fill="url(#sea)"/>';
+  // أمواج زخرفية
   [[30,520],[300,540],[40,430],[310,470],[150,420],[20,340],[190,300],[320,390],[150,560]].forEach(w =>
-    s += '<path d="M' + w[0] + ' ' + w[1] + ' q6 -6 12 0 t12 0" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="1.6"/>');
-  [[30,60],[310,100],[60,150],[320,200],[150,30],[200,120],[30,230]].forEach(w =>
-    s += '<circle class="pulse" cx="' + w[0] + '" cy="' + w[1] + '" r="2.4" fill="#ff6a3d"/>');
+    s += '<path class="wv" style="animation-delay:-' + ((w[0] * 7 + w[1]) % 30 / 10).toFixed(1) + 's" d="M' + w[0] + ' ' + w[1] + ' q6 -6 12 0 t12 0" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="1.6"/>');
+  s += '<g class="cl" style="animation-delay:-14s"><ellipse cx="0" cy="520" rx="34" ry="9" fill="#fff"/><ellipse cx="22" cy="514" rx="22" ry="8" fill="#fff"/></g>' +
+       '<g class="cl" style="animation-delay:-34s"><ellipse cx="0" cy="380" rx="28" ry="8" fill="#fff"/><ellipse cx="-18" cy="375" rx="18" ry="7" fill="#fff"/></g>';
+  // شرارات الجحيم
+  [[30,60],[310,100],[60,150],[320,200],[150,30],[200,120],[30,230],[170,200],[290,40],[120,250]].forEach((w, i) =>
+    s += '<circle class="ember" style="animation-delay:-' + (i * 0.37).toFixed(2) + 's" cx="' + w[0] + '" cy="' + w[1] + '" r="2.4" fill="#ff6a3d"/>');
   s += '<text x="62" y="262" font-size="13" font-weight="700" fill="#ff9a6d" text-anchor="middle">🔥 منطقة الجحيم 🔥</text>';
+  // الجسور
   for (let i = 1; i <= 10; i++) {
     const a = POS[i - 1], b = POS[i], done = i <= mark, hell = i >= 6;
     s += '<path d="M' + a.x + ' ' + (a.y - 4) + ' Q' + ((a.x + b.x) / 2) + ' ' + (((a.y + b.y) / 2) - 18) + ' ' + b.x + ' ' + (b.y - 4) + '" fill="none" stroke="' + (done ? "#8a5a2b" : (hell ? "#ff9a6d" : "#ffffff")) + '" stroke-width="' + (done ? 4 : 2.2) + '" stroke-linecap="round"' + (done ? '' : ' stroke-dasharray="3 7" stroke-opacity=".8"') + '/>';
   }
+  // الشاطئ
   s += '<ellipse cx="180" cy="560" rx="78" ry="22" fill="#e7d4a5" stroke="#8a6a3a" stroke-width="2"/>' +
        '<text x="180" y="580" font-size="12" font-weight="700" fill="#6e4a1a" text-anchor="middle">🏖 الشاطئ</text>';
+  // الجزر
   for (let i = 1; i <= 10; i++) {
     const p = POS[i], hell = i >= 6, reached = i <= mark;
     const sand = hell ? "#4a2118" : (reached ? "#f0dca0" : "#e7d4a5"), grass = hell ? "#8c2f1c" : (reached ? "#5fa862" : "#7fb57a");
@@ -333,15 +592,15 @@ function mapSVG(mark) {
   s += '<g id="fx"></g><g id="hero">' + HERO_SVG + '</g></svg>';
   return s;
 }
-const HERO_SVG = '<ellipse cx="0" cy="3" rx="11" ry="3.5" fill="#0004"/>' +
+const HERO_SVG = '<ellipse class="ring" cx="0" cy="3" rx="13" ry="4" fill="none" stroke="#c9a24a" stroke-width="1.6"/><g class="bob"><ellipse cx="0" cy="3" rx="11" ry="3.5" fill="#0004"/>' +
   '<path d="M-4 -7 L-5 2 M4 -7 L5 2" stroke="#2b2b2b" stroke-width="3" stroke-linecap="round"/>' +
   '<path d="M-7 -19 L-13 -10 M7 -19 L13 -10" stroke="#2b2b2b" stroke-width="3" stroke-linecap="round"/>' +
   '<rect x="-7" y="-23" width="14" height="17" rx="4" fill="#2f7d4f" stroke="#2b2b2b" stroke-width="1.5"/>' +
   '<circle cx="0" cy="-30" r="8" fill="#f3c9a0" stroke="#2b2b2b" stroke-width="1.5"/>' +
   '<path d="M-9 -32 Q0 -46 9 -32 Z" fill="#C8281E" stroke="#2b2b2b" stroke-width="1.2"/>' +
-  '<circle cx="-3" cy="-30" r="1" fill="#2b2b2b"/><circle cx="3" cy="-30" r="1" fill="#2b2b2b"/>';
+  '<circle cx="-3" cy="-30" r="1" fill="#2b2b2b"/><circle cx="3" cy="-30" r="1" fill="#2b2b2b"/></g>';
 
-function runAnim(ms, fn, tok) {
+function runAnim(ms, fn, tok) {   // يتوقف إن تغيرت الشاشة
   return new Promise(res => {
     const t0 = performance.now();
     (function f(t) {
@@ -360,18 +619,24 @@ function heroAt(i) { setHero(POS[i].x, POS[i].y - 6); }
 function arc(a, b, k, lift) { return { x: a.x + (b.x - a.x) * k, y: a.y + (b.y - a.y) * k - Math.sin(Math.PI * k) * lift }; }
 function redraw(mark) { const m = $("#map"); if (!m) return; m.outerHTML = mapSVG(mark); }
 
+const hellCol = i => i >= 6 ? "#ff9a6d" : "#f2eadb";
 async function doJump(from, to, tok) {
   const A = POS[from], B = POS[to];
+  SFX.whoosh(); HAP.v(20);
   const ok = await runAnim(1100, k => { const p = arc(A, B, k, 62); setHero(p.x, p.y - 6); }, tok);
-  if (ok) heroAt(to);
+  if (ok) { heroAt(to); SFX.land(); HAP.v(35); FX.puff(B.x, B.y + 2, hellCol(to)); }
   return ok;
 }
 async function doDrown(from, to, tok) {
+  let G_puffed = false;
   const A = POS[from], B = POS[to], K = 0.6;
+  SFX.whoosh();
+  // يقفز ثم يقصر عن الجزيرة ويسقط
   let ok = await runAnim(750, k => { const p = arc(A, B, k * K, 62); setHero(p.x, p.y - 6); }, tok); if (!ok) return false;
   const p0 = arc(A, B, K, 62), sx = p0.x, wy = (A.y + B.y) / 2 + 18;
   ok = await runAnim(650, k => { setHero(sx + k * 6, p0.y - 6 + (wy - p0.y) * k * k, 1, 1 - 0.1 * k); }, tok); if (!ok) return false;
   const fx = $("#fx"); if (!fx) return false;
+  SFX.splash(); FX.flash("water"); HAP.v([40, 30, 120]); FX.shake();
   fx.innerHTML = '<circle id="r1" cx="' + sx + '" cy="' + wy + '" r="2" fill="none" stroke="#fff" stroke-width="2.5"/><circle id="r2" cx="' + sx + '" cy="' + wy + '" r="2" fill="none" stroke="#fff" stroke-width="1.8"/>' +
     '<circle id="b1" cx="' + (sx - 5) + '" cy="' + wy + '" r="2.4" fill="#fff" fill-opacity=".8"/><circle id="b2" cx="' + (sx + 6) + '" cy="' + wy + '" r="1.8" fill="#fff" fill-opacity=".8"/>';
   ok = await runAnim(1300, k => {
@@ -380,6 +645,7 @@ async function doDrown(from, to, tok) {
     r2.setAttribute("r", 2 + 22 * Math.max(0, k - .25)); r2.setAttribute("stroke-opacity", Math.max(0, .9 - k));
     b1.setAttribute("cy", wy - 26 * k); b1.setAttribute("fill-opacity", .8 * (1 - k));
     b2.setAttribute("cy", wy - 36 * k); b2.setAttribute("fill-opacity", .8 * (1 - k));
+    if (k < .05 && !G_puffed) { G_puffed = true; FX.puff(sx + 6, wy, "#bfe6ff"); }
     setHero(sx + 6, wy + 4 + 26 * k, Math.max(0, 1 - k * 1.1), 0.9 - 0.3 * k);
   }, tok);
   if (fx) fx.innerHTML = "";
@@ -411,14 +677,16 @@ async function mapScreen(o) {
   clearInterval(tick); const tok = ++anim_token;
   const startMark = o.from !== undefined ? o.from : C.pos;
   show('<h2>🗺 خريطة الكنز</h2>' + mapSVG(startMark) + '<div id="panel"></div>');
+  SFX.mood(startMark >= 5 ? "hellsea" : "sea");
   heroAt(startMark);
   if (o.jump) {
     const ok = await doJump(o.from, o.to, tok); if (!ok) return;
     redraw(o.to); heroAt(o.to);
+    if (o.res.campaign_won) { SFX.win(); FX.confetti(280, true); HAP.v([80, 50, 80, 50, 200]); } else { SFX.clear(); FX.confetti(90); HAP.v([40, 30, 80]); }
     const n = o.res.island;
     let extra = '<div class="info center">✅ <b>أتممت الجزيرة ' + n + '!</b>' + ((n === 4 || n === 7) ? '<br>🚩 <b>نقطة حفظ</b>: إن غرقت لاحقاً ستعود إلى هنا.' : '') + (n === 5 ? '<br>🔥 الجحيم يبدأ من الجزيرة التالية!' : '') + '</div>' + rewardsHTML(o.res);
     if (o.res.campaign_won) {
-      panel(extra + '<button class="btn go" id="again">رحلة جديدة 🗺</button><button class="btn alt" id="cp">📣 شارك النتيجة</button>');
+      panel(extra + '<button class="btn go" id="again">رحلة جديدة 🗺</button><button class="btn alt" id="cp">مشاركة النتيجة</button>');
       $("#again").onclick = () => flip(() => home());
       $("#cp").onclick = e => shareText("🏆 وصلت إلى كنز خريطة tokonoma بعد 10 جزر وخمس منها جحيم! هل تقدر؟", e.target);
     } else {
@@ -433,22 +701,21 @@ async function mapScreen(o) {
     const np = o.res.pos;
     redraw(np); setHero(POS[np].x, POS[np].y - 6, 0);
     await runAnim(700, k => setHero(POS[np].x, POS[np].y - 6 - 14 * (1 - k), k), tok);
-    heroAt(np);
+    heroAt(np); SFX.respawn();
     panelNext('<div class="info hellbox center">🌊 <b>غرقت!</b> انتهى وقت الجزيرة ' + o.res.island + ' وأنت في المستوى ' + ((o.res.lv || 0) + 1) + '.<br>عدت إلى <b>' + placeName(np) + '</b>' + (np > 0 ? ' (نقطة الحفظ 🚩).' : '.') + '</div>');
   } else {
     panelNext(o.note ? '<div class="info center">' + o.note + '</div>' : "");
   }
 }
-
 /* ============ اللعب داخل الجزيرة ============ */
 async function startIsland() {
   const b = $("#jump"); if (b) b.disabled = true;
   try {
     const res = await rpc("start_island");
     C.pos = res.pos;
-    G = { st: null, opts: [], dead: [], endAt: 0, totalEnd: 0, busy: false, over: false, shuffled: false, msg: res.resumed ? "↻ استأنفت جزيرتك الجارية" : "", startPos: res.pos };
+    G = { st: null, opts: [], dead: [], endAt: 0, totalEnd: 0, busy: false, over: false, shuffled: false, streak: 0, lastSec: -1, msg: res.resumed ? "↻ استأنفت جزيرتك الجارية" : "", startPos: res.pos };
     anim_token++;
-    flip(() => { applyState(res.state); drawLevel(); loop(); });
+    flip(() => { applyState(res.state); drawLevel(); loop(); const s0 = res.state; SFX.gong(s0.hell); FX.banner((s0.hell ? "🔥 " : "") + "الجزيرة " + s0.island, s0.hell ? "الجحيم · 5 دقائق · لا تغرق!" : "7 دقائق · بالتوفيق!", s0.hell); });
   } catch (e) { const m = errAr(e); if (b) { b.disabled = false; panel('<div class="err">' + esc(m) + '</div>'); setTimeout(() => panelNext(), 2500); } else home(m); }
 }
 function applyState(st, keepOrder) {
@@ -483,8 +750,13 @@ function loop() {
     if (G.busy) return;
     const left = (G.endAt - now) / 1000, bar = $("#bar");
     if (bar) { bar.firstChild.style.width = Math.max(0, left / G.st.level_secs * 100) + "%"; bar.classList.toggle("low", left < 6); }
+    FX.urgent(left <= 10 && left > 0);
+    const sec = Math.ceil(left);
+    if (left <= 6 && left > 0 && sec !== G.lastSec) { G.lastSec = sec; SFX.tick(left <= 3); HAP.v(left <= 3 ? 25 : 10); }
+    if (G.st.hell && Math.random() < .003) { FX.flash("light"); SFX.thunder(); }
     if (G.st.lv === G.st.cursed && !G.shuffled && left <= (G.st.hell ? 10 : 8) && left > 0) {
       G.shuffled = true; G.opts = shuffle(G.opts); drawOpts(); setMsg("👁 الصفحة ملعونة! الخيارات تبدّلت");
+      SFX.curse(); FX.flash("dark"); FX.shake(); HAP.v([50, 40, 50, 40, 90]);
     }
     if (left <= 0 || G.totalEnd <= now) { G.busy = true; call(() => rpc("time_out", { p_run: G.st.run_id })); }
   }, 100);
@@ -492,7 +764,7 @@ function loop() {
 async function answer(i) {
   if (!G || G.busy || G.over) return;
   const t = G.opts[i]; if (G.dead.includes(t)) return;
-  G.busy = true;
+  G.busy = true; G.lastIdx = i;
   const btn = document.querySelectorAll(".opt")[i]; if (btn) btn.style.opacity = ".6";
   call(() => rpc("submit_answer", { p_run: G.st.run_id, p_answer: t }));
 }
@@ -507,14 +779,26 @@ async function call(fn) {
 }
 function handle(res) {
   const s = res.status;
-  if (s === "next") return flip(() => { applyState(res.state); drawLevel(); });
-  if (s === "penalty") { applyState(res.state, true); drawOpts(); return setMsg("خطأ! خسرت " + (G.st.hell ? 15 : 10) + " ثانية"); }
+  const good = s === "next" || s === "island_cleared";
+  if (good) {
+    G.streak = (G.streak || 0) + 1; SFX.good(G.streak); HAP.v(30); FX.flash("good");
+    const b = document.querySelectorAll(".opt")[G.lastIdx]; if (b) { b.style.opacity = ""; b.classList.add("ok"); }
+    if (G.streak >= 3) FX.toast("🔥 تتابع ×" + G.streak);
+    if (s === "next") return setTimeout(() => { if (G) flip(() => { applyState(res.state); drawLevel(); }); }, 300);
+    return setTimeout(() => cleared(res), 300);
+  }
+  if (s === "penalty") {
+    G.streak = 0; SFX.bad(); HAP.v([60, 40, 60]); FX.flash("bad"); FX.shake();
+    applyState(res.state, true); drawOpts(); return setMsg("خطأ! خسرت " + (G.st.hell ? 15 : 10) + " ثانية");
+  }
   if (s === "active") { applyState(res.state, true); drawOpts(); return; }
   if (s === "fall") {
+    G.streak = 0; FX.urgent(false);
+    if (res.reason === "trap") { SFX.trap(); FX.flash("dark"); HAP.v([100, 50, 250]); } else { SFX.fall(); FX.flash("bad"); HAP.v([80, 40, 120]); }
+    FX.shake();
     const why = res.reason === "timeout" ? "انتهى وقت المستوى ⏳" : res.reason === "trap" ? "🕳 كان فخاً مخفياً! سقطت 3 مستويات" : "إجابة خاطئة ❌";
     return flip(() => { applyState(res.state); G.msg = why + (res.back ? " · عدت إلى المستوى " + (res.state.lv + 1) : " · أعد المحاولة"); drawLevel(); });
   }
-  if (s === "island_cleared") return cleared(res);
   if (s === "drowned") return drowned(res);
   G.over = true; clearInterval(tick); home();
 }
