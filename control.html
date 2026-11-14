@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>tokonoma · التحكم المباشر</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#161110;--card:#221a18;--line:#3a2d29;--ink:#f3e9da;--gray:#b5a592;--red:#ff6a3d;--green:#4caf7a;--gold:#c9a24a}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Tajawal',system-ui,sans-serif;padding:16px 14px 50px;display:flex;justify-content:center}
+  main{width:100%;max-width:560px}
+  h1{font-size:1.4rem;margin:6px 0 14px;text-align:center}
+  h2{font-size:1.05rem;margin:22px 0 8px;color:var(--gold)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:8px 0}
+  input{width:100%;padding:12px;margin:5px 0;font:inherit;border:1px solid var(--line);border-radius:10px;background:#120d0c;color:var(--ink)}
+  .btn{display:block;width:100%;padding:12px;border-radius:10px;border:0;background:var(--red);color:#fff;font:inherit;font-weight:700;cursor:pointer;margin-top:8px}
+  .btn.alt{background:transparent;border:1px solid var(--line);color:var(--ink)}
+  .btn.ok{background:var(--green)}
+  .err{color:var(--red);text-align:center;min-height:1.3em;font-size:.9rem;margin-top:6px}
+  .okm{color:var(--green);text-align:center;min-height:1.3em;font-size:.9rem;margin-top:6px}
+  .row{display:flex;gap:8px;align-items:center}.row>*{flex:1}
+  .meta{font-size:.82rem;color:var(--gray);line-height:1.8;margin:6px 0}
+  label{font-size:.82rem;color:var(--gray)}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<script>
+const SUPABASE_URL = "https://orixllpvddqfyesvfvzn.supabase.co";
+const SUPABASE_KEY = "sb_publishable_mxfNNEHggVk0q5J-wmgmOA_OMMyIPPA";
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const lsGet = k => { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } };
+const lsSet = (k, v) => { try { v === null ? localStorage.removeItem(k) : localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+const EMAIL = u => u.toLowerCase() + "@tokonoma-players.com";
+const WEEKLY = ["أنهِ جزيرة كاملة دون أي خطأ", "اجمع 3 أسئلة ذهبية", "أنهِ جزيرتين من الجحيم", "أنهِ جزيرة في 4:30 دقيقة أو أقل", "أنهِ 5 جزر خلال الأسبوع"];
+let sess = lsGet("toko_admin_sess");   // نفس جلسة لوحة المالك
+
+function setSess(j) { sess = { access_token: j.access_token, refresh_token: j.refresh_token, expires_at: j.expires_at || (Math.floor(Date.now() / 1000) + (j.expires_in || 3600)) }; lsSet("toko_admin_sess", sess); }
+function clearSess() { sess = null; lsSet("toko_admin_sess", null); }
+async function getToken() {
+  if (!sess) return null;
+  if (sess.expires_at - Math.floor(Date.now() / 1000) < 60) {
+    try { setSess(await http("/auth/v1/token?grant_type=refresh_token", { body: { refresh_token: sess.refresh_token }, auth: false })); }
+    catch (e) { clearSess(); return null; }
+  }
+  return sess.access_token;
+}
+async function http(path, { body, auth = true } = {}) {
+  const h = { apikey: SUPABASE_KEY, "Content-Type": "application/json" };
+  const tok = auth ? await getToken() : null;
+  if (tok) h.Authorization = "Bearer " + tok;
+  let r;
+  try { r = await fetch(SUPABASE_URL + path, { method: "POST", headers: h, body: JSON.stringify(body || {}) }); }
+  catch (e) { const er = new Error("network"); throw er; }
+  let j = null; try { j = await r.json(); } catch (e) {}
+  if (!r.ok) { throw new Error((j && (j.message || j.msg || j.error_description || j.error)) || "error"); }
+  return j;
+}
+const rpc = (fn, args) => http("/rest/v1/rpc/" + fn, { body: args || {} });
+const errAr = e => {
+  const m = (e && e.message) || "";
+  if (/network/.test(m)) return "تعذّر الاتصال بالإنترنت";
+  if (/invalid_credentials|invalid login/i.test(m)) return "الاسم أو كلمة المرور غير صحيحة";
+  if (/not_admin/.test(m)) return "هذا الحساب ليس مالكاً";
+  if (/bad_boost/.test(m)) return "الدقائق من 1 إلى 720، والثواني من 10 إلى 300";
+  if (/jwt|not_authenticated/i.test(m)) return "انتهت الجلسة، سجّل الدخول من جديد";
+  return "خطأ: " + m;
+};
+const fmtLeft = s => { const m = Math.ceil(s / 60); return m >= 60 ? Math.floor(m / 60) + " ساعة و" + (m % 60) + " دقيقة" : m + " دقيقة"; };
+
+function login(msg) {
+  $("#app").innerHTML = '<h1>🎛 التحكم المباشر</h1><div class="card">' +
+    '<input id="u" placeholder="اسم حسابك في اللعبة" autocapitalize="none" style="direction:ltr;text-align:left">' +
+    '<input id="p" type="password" placeholder="كلمة المرور" style="direction:ltr;text-align:left">' +
+    '<div class="err" id="err">' + esc(msg || "") + '</div><button class="btn" id="go">دخول</button></div>';
+  $("#go").onclick = async () => {
+    const u = $("#u").value.trim(), p = $("#p").value; if (!u || !p) return;
+    $("#go").disabled = true; $("#err").textContent = "";
+    try { setSess(await http("/auth/v1/token?grant_type=password", { body: { email: EMAIL(u), password: p }, auth: false })); await load(); }
+    catch (e) { $("#err").textContent = errAr(e); $("#go").disabled = false; }
+  };
+}
+async function load(note) {
+  try { draw(await rpc("admin_live"), note); }
+  catch (e) { clearSess(); login(errAr(e)); }
+}
+function draw(n, note) {
+  const on = n.boost_secs > 0;
+  $("#app").innerHTML = '<h1>🎛 التحكم المباشر</h1>' +
+    '<div class="okm" id="note">' + esc(note || "") + '</div>' +
+    '<h2>📢 رسالة اليوم</h2><div class="card"><div class="meta">تظهر في أعلى الصفحة الرئيسية للجميع (حتى 200 حرف). اتركها فارغة لإخفائها.</div>' +
+    '<input id="news" maxlength="200" placeholder="مثال: بث مباشر الليلة الساعة 9 مساءً 🔴" value="' + esc(n.news) + '">' +
+    '<div class="row"><button class="btn ok" id="sn">حفظ الرسالة</button><button class="btn alt" id="cn">مسح</button></div></div>' +
+    '<h2>⚡ ساعة المضاعفة</h2><div class="card">' +
+    (on ? '<div class="meta" style="color:#4caf7a">مفعّلة الآن: +' + n.boost_secs + ' ثانية لكل جزيرة تبدأ، وتنتهي بعد ' + fmtLeft(n.boost_left) + '</div>' : '<div class="meta">غير مفعّلة. عند التفعيل تبدأ كل جزيرة بوقت إضافي، وتظهر الرسالة لكل اللاعبين.</div>') +
+    '<div class="row"><div><label>المدة (دقائق)</label><input id="bm" type="number" value="30" min="1" max="720" style="direction:ltr"></div><div><label>الثواني الإضافية</label><input id="bs" type="number" value="60" min="10" max="300" style="direction:ltr"></div></div>' +
+    '<button class="btn ok" id="sb">' + (on ? "تحديث وإعادة التفعيل" : "تفعيل الآن") + '</button>' + (on ? '<button class="btn alt" id="xb">إيقاف الآن</button>' : '') + '</div>' +
+    '<h2>🎯 تحدّي هذا الأسبوع</h2><div class="card"><b>' + esc(WEEKLY[n.week_id] || "") + '</b><div class="meta">أنجزه ' + n.week_done + ' لاعب هذا الأسبوع. يتبدل تلقائياً كل يوم اثنين، ولا يحتاج منك شيئاً.</div></div>' +
+    '<button class="btn alt" id="out" style="margin-top:20px">تسجيل الخروج</button>';
+  const act = async (fn, args, msg) => { try { await rpc(fn, args); await load(msg); } catch (e) { $("#note").className = "err"; $("#note").textContent = errAr(e); } };
+  $("#sn").onclick = () => act("admin_set_news", { p_text: $("#news").value }, "تم حفظ الرسالة ✅");
+  $("#cn").onclick = () => act("admin_set_news", { p_text: "" }, "تم مسح الرسالة ✅");
+  $("#sb").onclick = () => act("admin_set_boost", { p_minutes: +$("#bm").value, p_secs: +$("#bs").value }, "تم تفعيل ساعة المضاعفة ⚡");
+  const x = $("#xb"); if (x) x.onclick = () => act("admin_stop_boost", {}, "تم إيقاف ساعة المضاعفة");
+  $("#out").onclick = () => { clearSess(); login(); };
+}
+sess ? load() : login();
+</script>
+</body>
+</html>
