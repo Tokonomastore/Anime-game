@@ -125,6 +125,8 @@
   @keyframes rg{from{transform:scale(.6);opacity:.9}to{transform:scale(1.9);opacity:0}}
   .pf{animation:pf .8s ease-out forwards;transform-box:fill-box;transform-origin:center}
   @keyframes pf{to{transform:translate(var(--dx),var(--dy)) scale(.3);opacity:0}}
+  .tag.gold{border-color:#c9a24a;color:#8a6a1a;background:#fff3cf}
+  #page.hell .tag.gold{color:#ffd27a;background:#4a2f12}
   .bar.low{animation:lowb .45s ease-in-out infinite alternate}
   @keyframes lowb{to{filter:brightness(1.7)}}
   @media (prefers-reduced-motion:reduce){.sigil,.wv,.ember,.cl,.bob,.btn.go::after{animation:none}.book.shake{animation:none}}
@@ -154,8 +156,9 @@ const fmt = s => Math.floor(s / 60) + ":" + String(Math.floor(s % 60)).padStart(
 const SIGIL = '<svg class="sigil" viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="none" stroke="#6e1a15" stroke-width="2"/><circle cx="50" cy="50" r="38" fill="none" stroke="#c9a24a" stroke-width="1.5"/><path d="M50 8 L56 44 L92 50 L56 56 L50 92 L44 56 L8 50 L44 44 Z" fill="none" stroke="#6e1a15" stroke-width="1.5"/><text x="50" y="62" text-anchor="middle" font-size="34" font-family="serif" fill="#C8281E">床</text></svg>';
 const lsGet = k => { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } };
 const lsSet = (k, v) => { try { v === null ? localStorage.removeItem(k) : localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
-const ckOf = b => b >= 7 ? 7 : b >= 4 ? 4 : 0;
+const ckOf = b => b >= 7 ? 7 : b >= 4 ? 4 : b >= 2 ? 2 : 0;
 const placeName = p => p === 0 ? "الشاطئ" : "الجزيرة " + p;
+
 /* =====================================================================
    المؤثرات: صوت (مولَّد بالكود) + اهتزاز + جزيئات + وميض
    ===================================================================== */
@@ -353,6 +356,7 @@ const FX = (() => {
   if (ev === "click" && e.target.closest && e.target.closest(".btn,.opt,.tabs button")) { SFX.click(); HAP.tap(); }
 }, true));
 document.addEventListener("visibilitychange", () => { if (!document.hidden) SFX.init(); });
+
 /* ============ الاتصال بالخادم (Supabase) ============ */
 const EMAIL = u => u.toLowerCase() + "@tokonoma-players.com";   // بريد وهمي داخلي: اللاعب لا يراه
 let sess = lsGet("toko_sess");
@@ -399,6 +403,9 @@ function errAr(e) {
   if (has("invalid_credentials") || has("invalid login")) return "الاسم أو كلمة المرور غير صحيحة";
   if (has("bad_username")) return "الاسم: من 3 إلى 16 حرفاً إنجليزياً أو أرقاماً أو _ فقط";
   if (has("weak_password") || has("at least 6")) return "كلمة المرور قصيرة (6 أحرف على الأقل)";
+  if (has("fifty_used")) return "استعملت الحذف في هذه الجزيرة من قبل";
+  if (has("cannot_fifty")) return "لا يمكن الحذف في هذا السؤال";
+  if (has("too_late")) return "انتهى وقت السؤال";
   if (has("too_fast")) return "انتظر بضع ثوانٍ قبل القفز إلى جزيرة جديدة";
   if (has("daily_limit")) return "وصلت إلى الحد اليومي للمحاولات، عد غداً";
   if (has("rate_limit") || has("rate limit")) return "محاولات كثيرة، انتظر قليلاً";
@@ -422,7 +429,7 @@ function show(html, hell) {
 }
 
 const REWARD_BOX = '<div class="reward">🎁 <b>تجاوز الجزيرة 5 = خصم 10%</b> على طلبك (مرة كل يوم)<br>🏆 <b>الوصول إلى الجزيرة 10 = مجسم أنمي مجاني!</b>' +
-  '<small>خريطة من 10 جزر، في كل جزيرة 15 سؤالاً. الجزر 1–5 مدتها 7 دقائق. ومن الجزيرة 6 يبدأ <b>الجحيم 🔥</b>: أسئلة أصعب و5 دقائق فقط. إن انتهى وقتك تغرق 🌊 وتعود إلى آخر نقطة حفظ (الجزيرة 4 أو 7).</small></div>';
+  '<small>خريطة من 10 جزر، في كل جزيرة 15 سؤالاً. الجزر 1–5 مدتها 7 دقائق. ومن الجزيرة 6 يبدأ <b>الجحيم 🔥</b>: أسئلة أصعب و5 دقائق فقط. إن انتهى وقتك تغرق 🌊 وتعود إلى آخر نقطة حفظ (الجزيرة 2 أو 4 أو 7).</small></div>';
 
 /* ============ المشاركة ============ */
 const GAME_URL = location.origin + location.pathname;
@@ -523,7 +530,9 @@ function rulesPage() {
     '<li>🗺 عشر جزر، في كل جزيرة <b>15 سؤالاً</b> (15 مستوى). تقفز إلى الجزيرة التالية عند إنهاء الـ15.</li>' +
     '<li>⏳ الجزر 1–5: <b>7 دقائق</b> لكل جزيرة. الجزر 6–10 (الجحيم 🔥): <b>5 دقائق</b> فقط.</li>' +
     '<li>🌊 إن انتهى وقت الجزيرة <b>تغرق</b> وتعود إلى آخر نقطة حفظ.</li>' +
-    '<li>🚩 نقطتا الحفظ: <b>الجزيرة 4</b> و<b>الجزيرة 7</b>. قبل الجزيرة 4 تعود إلى الشاطئ.</li>' +
+    '<li>🚩 نقاط الحفظ: <b>الجزيرة 2</b> و<b>الجزيرة 4</b> و<b>الجزيرة 7</b>. قبل الجزيرة 2 تعود إلى الشاطئ.</li>' +
+    '<li>✂️ <b>حذف خيارين</b>: مرة واحدة في كل جزيرة، يحذف إجابتين خاطئتين من السؤال الحالي.</li>' +
+    '<li>✨ <b>السؤال الذهبي</b>: في كل جزيرة سؤال واحد ذهبي، إجابته الصحيحة تمنحك وقتاً إضافياً (+20 ثانية، و+15 في الجحيم).</li>' +
     '<li>❌ الأخطاء داخل الجزيرة: عقوبة وقت في أول المستويات، ثم رجوع مستوى، ثم مستويين في الآخر.</li>' +
     '<li>🔥 في الجحيم: وقت أقل لكل سؤال، وعقوبات أقسى، وأسئلة للخبراء.</li>' +
     '<li>🕳 في كل جزيرة <b>فخ مخفي</b>: الخطأ فيه يرجعك 3 مستويات.</li>' +
@@ -542,9 +551,10 @@ async function leaderboard() {
       (rows.length ? '<table class="lb">' + rows.map((r, i) => '<tr><td>' + medal(i) + '</td><td>' + esc(r.username) + '</td><td>' + (r.island >= 10 ? "🏆 " : "") + 'الجزيرة ' + r.island + (r.wins > 1 ? ' ×' + r.wins : '') + '</td></tr>').join("") + '</table>'
                    : '<p class="sub">لم يُكمل أحد جزيرة هذا الأسبوع. كن الأول! 🔥</p>') +
       '<button class="btn" id="bk">رجوع</button>');
-  } catch (e) { show('<h2>🏆 ترتيب الأسبوع</h2><p class="sub">' + esc(errAr(e)) + '</p><button class="btn" id="bk">رجوع</button>'); }
+    } catch (e) { show('<h2>🏆 ترتيب الأسبوع</h2><p class="sub">' + esc(errAr(e)) + '</p><button class="btn" id="bk">رجوع</button>'); }
   $("#bk").onclick = () => flip(() => home());
 }
+
 /* =====================================================================
    خريطة الكنز
    ===================================================================== */
@@ -584,7 +594,7 @@ function mapSVG(mark) {          // mark = موضع الشخصية (يحدد ا�
     s += '<ellipse cx="' + p.x + '" cy="' + p.y + '" rx="32" ry="19" fill="' + sand + '" stroke="' + rim + '" stroke-width="2"/>' +
          '<ellipse cx="' + p.x + '" cy="' + (p.y - 1) + '" rx="23" ry="13" fill="' + grass + '"/>' +
          '<text x="' + p.x + '" y="' + (p.y + 6) + '" font-size="17" font-weight="700" fill="#fff" text-anchor="middle" font-family="ui-monospace,Menlo,monospace">' + i + '</text>';
-    if (i === 4 || i === 7) s += '<path d="M' + (p.x + 22) + ' ' + (p.y - 8) + ' v-24" stroke="#4a3a2a" stroke-width="2"/><path d="M' + (p.x + 22) + ' ' + (p.y - 32) + ' l15 6 l-15 6 z" fill="' + (reached ? "#c9a24a" : "#C8281E") + '"/>';
+    if (i === 2 || i === 4 || i === 7) s += '<path d="M' + (p.x + 22) + ' ' + (p.y - 8) + ' v-24" stroke="#4a3a2a" stroke-width="2"/><path d="M' + (p.x + 22) + ' ' + (p.y - 32) + ' l15 6 l-15 6 z" fill="' + (reached ? "#c9a24a" : "#C8281E") + '"/>';
     if (i === 5) s += '<text x="' + (p.x - 30) + '" y="' + (p.y - 14) + '" font-size="17">🎟</text>';
     if (i === 10) s += '<text x="' + p.x + '" y="' + (p.y - 26) + '" font-size="26" text-anchor="middle">🏆</text>';
     s += '</g>';
@@ -684,7 +694,7 @@ async function mapScreen(o) {
     redraw(o.to); heroAt(o.to);
     if (o.res.campaign_won) { SFX.win(); FX.confetti(280, true); HAP.v([80, 50, 80, 50, 200]); } else { SFX.clear(); FX.confetti(90); HAP.v([40, 30, 80]); }
     const n = o.res.island;
-    let extra = '<div class="info center">✅ <b>أتممت الجزيرة ' + n + '!</b>' + ((n === 4 || n === 7) ? '<br>🚩 <b>نقطة حفظ</b>: إن غرقت لاحقاً ستعود إلى هنا.' : '') + (n === 5 ? '<br>🔥 الجحيم يبدأ من الجزيرة التالية!' : '') + '</div>' + rewardsHTML(o.res);
+    let extra = '<div class="info center">✅ <b>أتممت الجزيرة ' + n + '!</b>' + ((n === 2 || n === 4 || n === 7) ? '<br>🚩 <b>نقطة حفظ</b>: إن غرقت لاحقاً ستعود إلى هنا.' : '') + (n === 5 ? '<br>🔥 الجحيم يبدأ من الجزيرة التالية!' : '') + '</div>' + rewardsHTML(o.res);
     if (o.res.campaign_won) {
       panel(extra + '<button class="btn go" id="again">رحلة جديدة 🗺</button><button class="btn alt" id="cp">مشاركة النتيجة</button>');
       $("#again").onclick = () => flip(() => home());
@@ -707,6 +717,7 @@ async function mapScreen(o) {
     panelNext(o.note ? '<div class="info center">' + o.note + '</div>' : "");
   }
 }
+
 /* ============ اللعب داخل الجزيرة ============ */
 async function startIsland() {
   const b = $("#jump"); if (b) b.disabled = true;
@@ -730,10 +741,14 @@ function drawLevel() {
   const st = G.st, lv = st.lv;
   let dots = ""; for (let i = 0; i < 15; i++) dots += '<i class="' + (i < lv ? "done" : i === lv ? "cur" : "") + '"></i>';
   const tag = st.pool === 4 ? '<span class="tag">⚔️ معركة</span>' : st.pool === 5 ? '<span class="tag">🔥 سؤال الخبراء</span>' : st.pool === 6 ? '<span class="tag">💀 جحيم</span>' : '';
+  const gold = st.golden ? '<span class="tag gold">✨ سؤال ذهبي: إجابة صحيحة = وقت إضافي</span>' : '';
   show('<div class="top"><span class="lvl">' + (st.hell ? '🔥 ' : '') + 'الجزيرة ' + st.island + ' · المستوى ' + (lv + 1) + '/15</span><span>وقت الجزيرة <b class="mono" id="gt"></b></span></div>' +
-    '<div class="dots">' + dots + '</div><div class="bar" id="bar"><b></b></div>' + tag +
-    '<div class="q">' + esc(st.q) + '</div><div id="opts"></div><div class="msg" id="msg">' + esc(G.msg) + '</div>', st.hell);
+    '<div class="dots">' + dots + '</div><div class="bar" id="bar"><b></b></div>' + tag + gold +
+    '<div class="q">' + esc(st.q) + '</div><div id="opts"></div>' +
+    (st.fifty_left ? '<button class="btn alt" id="f50" style="margin-top:6px;font-size:.9rem">✂️ احذف خيارين (مرة واحدة في الجزيرة)</button>' : '') +
+    '<div class="msg" id="msg">' + esc(G.msg) + '</div>', st.hell);
   G.msg = ""; drawOpts();
+  const f = $("#f50"); if (f) f.onclick = fifty;
 }
 function drawOpts() {
   $("#opts").innerHTML = G.opts.map((t, i) => '<button class="opt' + (G.dead.includes(t) ? " dead" : "") + '" data-i="' + i + '">' + esc(t) + '</button>').join("");
@@ -761,6 +776,19 @@ function loop() {
     if (left <= 0 || G.totalEnd <= now) { G.busy = true; call(() => rpc("time_out", { p_run: G.st.run_id })); }
   }, 100);
 }
+async function fifty() {
+  if (!G || G.busy || G.over || !G.st.fifty_left) return;
+  G.busy = true;
+  const f = $("#f50"); if (f) f.disabled = true;
+  try {
+    const res = await rpc("use_fifty", { p_run: G.st.run_id });
+    if (res.status === "active") { applyState(res.state, true); drawOpts(); const f2 = $("#f50"); if (f2) f2.remove(); SFX.good(1); FX.toast("✂️ حُذف خياران"); }
+    else handle(res);
+  } catch (e) {
+    G.busy = false; if (f) f.disabled = false;
+    setMsg(errAr(e));
+  }
+}
 async function answer(i) {
   if (!G || G.busy || G.over) return;
   const t = G.opts[i]; if (G.dead.includes(t)) return;
@@ -783,7 +811,8 @@ function handle(res) {
   if (good) {
     G.streak = (G.streak || 0) + 1; SFX.good(G.streak); HAP.v(30); FX.flash("good");
     const b = document.querySelectorAll(".opt")[G.lastIdx]; if (b) { b.style.opacity = ""; b.classList.add("ok"); }
-    if (G.streak >= 3) FX.toast("🔥 تتابع ×" + G.streak);
+    if (res.bonus > 0) { FX.toast("✨ سؤال ذهبي! +" + res.bonus + " ثانية"); FX.confetti(40, true); }
+    else if (G.streak >= 3) FX.toast("🔥 تتابع ×" + G.streak);
     if (s === "next") return setTimeout(() => { if (G) flip(() => { applyState(res.state); drawLevel(); }); }, 300);
     return setTimeout(() => cleared(res), 300);
   }
