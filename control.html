@@ -66,6 +66,8 @@ const errAr = e => {
   if (/invalid_credentials|invalid login/i.test(m)) return "الاسم أو كلمة المرور غير صحيحة";
   if (/not_admin/.test(m)) return "هذا الحساب ليس مالكاً";
   if (/bad_boost/.test(m)) return "الدقائق من 1 إلى 720، والثواني من 10 إلى 300";
+  if (/no_player/.test(m)) return "لا يوجد لاعب بهذا الاسم";
+  if (/bad_island/.test(m)) return "رقم الجزيرة من 1 إلى 10";
   if (/jwt|not_authenticated/i.test(m)) return "انتهت الجلسة، سجّل الدخول من جديد";
   return "خطأ: " + m;
 };
@@ -99,12 +101,17 @@ function draw(n, note) {
     '<div class="row"><div><label>المدة (دقائق)</label><input id="bm" type="number" value="30" min="1" max="720" style="direction:ltr"></div><div><label>الثواني الإضافية</label><input id="bs" type="number" value="60" min="10" max="300" style="direction:ltr"></div></div>' +
     '<button class="btn ok" id="sb">' + (on ? "تحديث وإعادة التفعيل" : "تفعيل الآن") + '</button>' + (on ? '<button class="btn alt" id="xb">إيقاف الآن</button>' : '') + '</div>' +
     '<h2>🎯 تحدّي هذا الأسبوع</h2><div class="card"><b>' + esc(WEEKLY[n.week_id] || "") + '</b><div class="meta">أنجزه ' + n.week_done + ' لاعب هذا الأسبوع. يتبدل تلقائياً كل يوم اثنين، ولا يحتاج منك شيئاً.</div></div>' +
+    '<h2>🎬 حساب التصوير</h2><div class="card"><div class="meta">ينقل أي حساب إلى بداية جزيرة معيّنة دون أن تُحسب له جزر منجزة، فلا يتأثر الترتيب. اكتب اسم حساب التصوير ثم اضغط.</div>' +
+    '<input id="mv" placeholder="اسم حساب التصوير" autocapitalize="none" style="direction:ltr;text-align:left">' +
+    '<label>ابدأ من الجزيرة</label><input id="mi" type="number" value="6" min="1" max="10" style="direction:ltr">' +
+    '<button class="btn ok" id="mb">انقل الحساب</button></div>' +
     '<button class="btn alt" id="out" style="margin-top:20px">تسجيل الخروج</button>';
   const act = async (fn, args, msg) => { try { await rpc(fn, args); await load(msg); } catch (e) { $("#note").className = "err"; $("#note").textContent = errAr(e); } };
   $("#sn").onclick = () => act("admin_set_news", { p_text: $("#news").value }, "تم حفظ الرسالة ✅");
   $("#cn").onclick = () => act("admin_set_news", { p_text: "" }, "تم مسح الرسالة ✅");
   $("#sb").onclick = () => act("admin_set_boost", { p_minutes: +$("#bm").value, p_secs: +$("#bs").value }, "تم تفعيل ساعة المضاعفة ⚡");
   const x = $("#xb"); if (x) x.onclick = () => act("admin_stop_boost", {}, "تم إيقاف ساعة المضاعفة");
+  $("#mb").onclick = () => act("admin_move_player", { p_username: $("#mv").value.trim(), p_island: +$("#mi").value }, "تم نقل الحساب ✅ سجّل الدخول به وسيبدأ من الجزيرة " + $("#mi").value);
   $("#out").onclick = () => { clearSess(); login(); };
 }
 sess ? load() : login();
