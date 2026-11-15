@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>tokonoma · البث المباشر</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#1b1412;--card:#2a1f1b;--line:#4a3a33;--ink:#f2eadb;--gray:#b9a98f;--red:#ff6a3d;--green:#4caf7a;--gold:#c9a24a}
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(circle at 50% 0%,#2c211d,var(--bg));color:var(--ink);font-family:'Tajawal',system-ui,sans-serif;min-height:100vh;padding:22px 18px 30px;display:flex;justify-content:center}
+  body.clear{background:transparent}
+  main{width:100%;max-width:760px}
+  .brand{text-align:center;color:var(--gold);font-family:ui-monospace,Menlo,monospace;letter-spacing:.3em;font-size:.9rem;direction:ltr}
+  h1{font-family:'Amiri',serif;text-align:center;font-size:2.4rem;margin:6px 0 4px}
+  .url{text-align:center;color:var(--gray);font-size:1rem;margin-bottom:16px;direction:ltr}
+  .live{display:flex;justify-content:center;align-items:center;gap:10px;font-size:1.6rem;margin:8px 0 16px}
+  .dot{width:14px;height:14px;border-radius:50%;background:var(--green);animation:p 1.4s infinite}
+  @keyframes p{50%{opacity:.25;transform:scale(1.4)}}
+  .live b{font-family:ui-monospace,Menlo,monospace;color:var(--gold);font-size:2.2rem}
+  .box{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:12px 16px;margin:10px 0;font-size:1.25rem;line-height:1.8}
+  .news{border-color:#5b9bd5}.boost{border-color:var(--green)}
+  h2{font-size:1.2rem;color:var(--gold);margin:18px 0 6px}
+  .ev{display:flex;gap:12px;align-items:center;padding:9px 4px;border-top:1px dashed var(--line);font-size:1.3rem;animation:in .5s}
+  @keyframes in{from{opacity:0;transform:translateY(-8px)}}
+  .ev .t{margin-inline-start:auto;color:var(--gray);font-size:.95rem}
+  .ev b{color:var(--gold)}
+  .top{display:flex;gap:12px;align-items:center;padding:7px 4px;border-top:1px dashed var(--line);font-size:1.3rem}
+  .top .i{margin-inline-start:auto;font-family:ui-monospace,Menlo,monospace;color:var(--red);direction:ltr}
+  .empty{color:var(--gray);text-align:center;padding:10px}
+</style>
+</head>
+<body>
+<main>
+  <div class="brand">TOKONOMA · TREASURE MAP</div>
+  <h1>🗺 خريطة الكنز</h1>
+  <div class="url">tokonomastore.github.io/Anime-game</div>
+  <div id="app"></div>
+</main>
+<script>
+const SUPABASE_URL = "https://orixllpvddqfyesvfvzn.supabase.co";
+const SUPABASE_KEY = "sb_publishable_mxfNNEHggVk0q5J-wmgmOA_OMMyIPPA";
+if (/[?&]bg=clear/.test(location.search)) document.body.classList.add("clear");
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const WEEKLY = ["أنهِ جزيرة كاملة دون أي خطأ", "اجمع 3 أسئلة ذهبية ✨", "أنهِ جزيرتين من الجحيم 🔥", "أنهِ جزيرة في 4:30 دقيقة أو أقل", "أنهِ 5 جزر خلال الأسبوع"];
+const ago = s => s < 60 ? "الآن" : s < 3600 ? "قبل " + Math.floor(s / 60) + " د" : "قبل " + Math.floor(s / 3600) + " س";
+const left = s => { const m = Math.max(1, Math.ceil(s / 60)); return m >= 60 ? Math.floor(m / 60) + " س " + (m % 60) + " د" : m + " دقيقة"; };
+const evLine = e => e.k === "drown" ? '<span>🌊</span><span><b>' + esc(e.u) + '</b> غرق في الجزيرة ' + e.i + '</span>'
+  : e.k === "treasure" ? '<span>🏆</span><span><b>' + esc(e.u) + '</b> وصل إلى الكنز!</span>'
+  : '<span>' + (e.i >= 6 ? "🔥" : "🏝") + '</span><span><b>' + esc(e.u) + '</b> أنهى الجزيرة ' + e.i + '</span>';
+let seen = "";
+async function tick() {
+  try {
+    const r = await fetch(SUPABASE_URL + "/rest/v1/rpc/public_pulse", { method: "POST", headers: { apikey: SUPABASE_KEY, "Content-Type": "application/json" }, body: "{}" });
+    const d = await r.json(); if (!r.ok) throw new Error("x");
+    let h = '<div class="live"><span class="dot"></span>لاعبون الآن: <b>' + d.active + '</b></div>';
+    if (d.news) h += '<div class="box news">📢 ' + esc(d.news) + '</div>';
+    if (d.boost_secs > 0) h += '<div class="box boost">⚡ <b>ساعة المضاعفة!</b> +' + d.boost_secs + ' ثانية لكل جزيرة · تنتهي بعد ' + left(d.boost_left) + '</div>';
+    h += '<div class="box">🎯 <b>تحدّي الأسبوع:</b> ' + esc(WEEKLY[d.week_id] || "") + ' <span style="color:var(--gray);font-size:1rem">· أنجزه ' + d.week_done + '</span></div>';
+    h += '<h2>آخر الأحداث</h2>' + (d.events.length ? d.events.map(e => '<div class="ev">' + evLine(e) + '<span class="t">' + ago(e.ago) + '</span></div>').join("") : '<div class="empty">لا أحداث بعد، كن الأول! 🔥</div>');
+    h += '<h2>🏆 أفضل اللاعبين هذا الأسبوع</h2>' + (d.top.length ? d.top.map((t, i) => '<div class="top"><span>' + (["🥇", "🥈", "🥉"][i] || (i + 1)) + '</span><span>' + esc(t.username) + '</span><span class="i">' + (t.island >= 10 ? "🏆 " : "") + 'الجزيرة ' + t.island + '</span></div>').join("") : '<div class="empty">—</div>');
+    if (h !== seen) { $("#app").innerHTML = h; seen = h; }
+  } catch (e) { /* نُبقي آخر عرض */ }
+}
+tick(); setInterval(tick, 5000);
+</script>
+</body>
+</html>
