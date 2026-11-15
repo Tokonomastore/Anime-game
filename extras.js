@@ -15,11 +15,25 @@ const WEEKLY = [
 const fmtLeft = s => { const m = Math.max(1, Math.ceil(s / 60)); return m >= 60 ? Math.floor(m / 60) + " س " + (m % 60 ? (m % 60) + " د" : "") : m + " دقيقة"; };
 const BOX = (txt, bg, bd, col) => '<div class="warn" style="background:' + bg + ';border-color:' + bd + ';color:' + col + '">' + txt + '</div>';
 
+
+/* ===== وضع العرض (للتصوير): خط أكبر وصفحة أعرض. يُفعَّل أيضاً بإضافة ?show=1 للرابط ===== */
+(function () {
+  const st = document.createElement("style");
+  st.textContent = "html.show{font-size:19px}html.show main{max-width:640px}html.show footer{display:none}";
+  document.head.appendChild(st);
+  document.documentElement.classList.toggle("show", lsGet("toko_show") === true || /[?&]show=1/.test(location.search));
+})();
+const showOn = () => document.documentElement.classList.contains("show");
+function toggleShow() { const v = !showOn(); lsSet("toko_show", v); document.documentElement.classList.toggle("show", v); const b = $("#showm"); if (b) b.textContent = showLabel(); }
+const showLabel = () => "🎬 وضع العرض للتصوير: " + (showOn() ? "مفعّل (اضغط للإيقاف)" : "متوقف (اضغط للتشغيل)");
+
 let _dt = 0;
 function decorateHome() {
   const pg = $("#page"); if (!pg || !READY) return;
   const t = ++_dt;
   pg.insertAdjacentHTML("afterbegin", '<div id="news" data-t="' + t + '"></div>');
+  pg.insertAdjacentHTML("beforeend", '<button class="lnk" id="showm"></button>');
+  const sb = $("#showm"); if (sb) { sb.textContent = showLabel(); sb.onclick = toggleShow; }
   rpc("public_news", {}, !!sess).then(n => {
     const box = $("#news"); if (!box || box.dataset.t != t) return;
     let h = "";
