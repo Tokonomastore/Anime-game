@@ -86,13 +86,22 @@ function login(msg) {
   };
 }
 async function load(note) {
-  try { draw(await rpc("admin_live"), note); }
+    try { let f = null; try { f = await rpc("admin_funnel"); } catch (e) {} draw(await rpc("admin_live"), note, f); }
   catch (e) { clearSess(); login(errAr(e)); }
 }
-function draw(n, note) {
+function funnelHTML(f) {
+  if (!f) return "";
+  const t = f.total;
+  const rows = f.days.map(d => '<tr><td>' + esc(String(d.day).slice(5, 10)) + '</td><td>' + d.visits + '</td><td>' + d.guests + '</td><td>' + d.direct + '</td><td>' + d.upgrades + '</td></tr>').join("");
+  return '<h2>📊 الزوّار والتسجيل</h2><div class="card"><div class="meta">آخر 7 أيام. «فتحوا» = زوّار فريدون في اليوم (متصفح واحد = زيارة واحدة).</div>' +
+    '<table style="width:100%;text-align:center;font-size:.88rem;border-collapse:collapse"><tr style="opacity:.7"><td>اليوم</td><td>فتحوا</td><td>جرّبوا كضيف</td><td>سجّلوا مباشرة</td><td>حوّلوا ضيفاً</td></tr>' + rows + '</table>' +
+    '<div class="meta" style="margin-top:8px">المجموع: ' + t.players + ' لاعباً · ' + t.guests + ' جرّبوا كضيف (منهم ' + t.guest_cleared + ' أنهوا الجزيرة 1) · ' + t.upgraded + ' حوّلوا حسابهم</div></div>';
+}
+function draw(n, note, f) {
   const on = n.boost_secs > 0;
   $("#app").innerHTML = '<h1>🎛 التحكم المباشر</h1>' +
     '<div class="okm" id="note">' + esc(note || "") + '</div>' +
+    funnelHTML(f) +
     '<h2>📢 رسالة اليوم</h2><div class="card"><div class="meta">تظهر في أعلى الصفحة الرئيسية للجميع (حتى 200 حرف). اتركها فارغة لإخفائها.</div>' +
     '<input id="news" maxlength="200" placeholder="مثال: بث مباشر الليلة الساعة 9 مساءً 🔴" value="' + esc(n.news) + '">' +
     '<div class="row"><button class="btn ok" id="sn">حفظ الرسالة</button><button class="btn alt" id="cn">مسح</button></div></div>' +
